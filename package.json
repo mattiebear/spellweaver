@@ -1,0 +1,17 @@
+{
+  "name": "@hexx/spellweaver",
+  "version": "1.0.0",
+  "description": "Game session REST and Websocket API for Hexx application",
+  "scripts": {
+    "dev": "echo \"Error: dev script specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matthew Sells (matthew.sells@proton.me)",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "koa": "^2.14.2",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
