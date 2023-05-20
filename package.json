@@ -14,6 +14,7 @@
   "author": "Matthew Sells (matthew.sells@proton.me)",
   "license": "UNLICENSED",
   "dependencies": {
+    "@koa/router": "^12.0.0",
     "koa": "^2.14.2",
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
@@ -21,6 +22,7 @@
     "typescript": "^5.0.4"
   },
   "devDependencies": {
-    "@types/koa": "^2.13.6"
+    "@types/koa": "^2.13.6",
+    "@types/koa__router": "^12.0.0"
   }
 }
