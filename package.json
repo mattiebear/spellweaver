@@ -3,15 +3,29 @@
   "version": "1.0.0",
   "description": "Game session REST and Websocket API for Hexx application",
   "scripts": {
-    "dev": "echo \"Error: dev script specified\" && exit 1",
+    "dev": "nodemon src/index.ts",
+    "format": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
   },
   "author": "Matthew Sells (matthew.sells@proton.me)",
   "license": "UNLICENSED",
   "dependencies": {
+    "@koa/router": "^12.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "jwks-rsa": "^3.0.1",
     "koa": "^2.14.2",
     "nodemon": "^2.0.22",
+    "prettier": "^2.8.8",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/koa": "^2.13.6",
+    "@types/koa__router": "^12.0.0"
   }
 }
