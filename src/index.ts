@@ -1,4 +1,5 @@
 import Koa from 'koa';
+import cors from '@koa/cors';
 import Router from '@koa/router';
 import jwksClient from 'jwks-rsa';
 import jwt from 'jsonwebtoken';
@@ -18,9 +19,16 @@ const client = jwksClient({
 const app = new Koa();
 const router = new Router();
 
-router.get('/healthz', (ctx) => {
-  ctx.body = { succes: true };
+router.get('/ping', (ctx) => {
+  ctx.body = { status: 'pong' };
 });
+
+// TODO: Add specific origin
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 
 app.use(async (ctx, next) => {
   const token = ctx.request.headers.authorization?.split(' ')[1];
@@ -29,6 +37,7 @@ app.use(async (ctx, next) => {
     throw new HttpError('No token provided', 401);
   }
 
+  // TODO: Add to env
   const key = await client.getSigningKey('ins_2Q1sqhNI0Z1N4tLkIvObwQWdb7E');
 
   const signingKey = key.getPublicKey();
