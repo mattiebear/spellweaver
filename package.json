@@ -14,6 +14,7 @@
   "author": "Matthew Sells (matthew.sells@proton.me)",
   "license": "UNLICENSED",
   "dependencies": {
+    "@koa/cors": "^4.0.0",
     "@koa/router": "^12.0.0",
     "jsonwebtoken": "^9.0.0",
     "jwks-rsa": "^3.0.1",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.2",
     "@types/koa": "^2.13.6",
+    "@types/koa__cors": "^4.0.0",
     "@types/koa__router": "^12.0.0"
   }
 }
