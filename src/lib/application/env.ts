@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 import fs from 'node:fs';
 import path from 'node:path';
 
-export class Env {
-	private static _instance: Env;
+export class ENV {
+	private static _instance: ENV;
 
 	private constructor() {
 		this.configEnv();
@@ -48,31 +48,31 @@ export class Env {
 	// Singleton static methods
 
 	public static getInstance() {
-		if (!Env._instance) {
-			Env._instance = new Env();
+		if (!ENV._instance) {
+			ENV._instance = new ENV();
 		}
 
-		return Env._instance;
+		return ENV._instance;
 	}
 
 	public static config() {
-		return Env.getInstance();
+		return ENV.getInstance();
 	}
 
 	public static isDevelopment() {
-		return Env.getInstance().env === 'development';
+		return ENV.getInstance().env === 'development';
 	}
 
 	public static isProduction() {
-		return Env.getInstance().env === 'production';
+		return ENV.getInstance().env === 'production';
 	}
 
 	public static get(key: string) {
-		return Env.getInstance().get(key);
+		return ENV.getInstance().get(key);
 	}
 
 	public static fetch(key: string) {
-		const value = Env.get(key);
+		const value = ENV.get(key);
 
 		if (!value) {
 			throw new Error(`Missing environment variable: ${key}`);

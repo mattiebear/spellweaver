@@ -21,8 +21,11 @@
 		"jwks-rsa": "^3.0.1",
 		"koa": "^2.14.2",
 		"nodemon": "^2.0.22",
+		"pg": "^8.11.0",
 		"prettier": "^2.8.8",
+		"reflect-metadata": "^0.1.13",
 		"ts-node": "^10.9.1",
+		"typeorm": "^0.3.16",
 		"typescript": "^5.0.4"
 	},
 	"devDependencies": {
