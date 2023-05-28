@@ -4,8 +4,6 @@ import Koa from 'koa';
 import { allowedOrigins } from './middleware/cors';
 import { jwtAuthentication } from './middleware/jwt-auth';
 
-console.log('database password', process.env.DATABASE_PASSWORD);
-
 const app = new Koa();
 const router = new Router();
 
