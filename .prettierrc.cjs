@@ -3,6 +3,7 @@ module.exports = {
 	importOrder: ['<THIRD_PARTY_MODULES>', '^@/(.*)$', '^[./]'],
 	importOrderSeparation: true,
 	importOrderSortSpecifiers: true,
+	importOrderParserPlugins: ['jsx', 'typescript', 'decorators-legacy'],
 	plugins: [require('@ianvs/prettier-plugin-sort-imports')],
 	semi: true,
 	singleQuote: true,

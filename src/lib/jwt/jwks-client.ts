@@ -1,7 +1,7 @@
 import createClient from 'jwks-rsa';
 
-import { Env } from '../application/env';
+import { ENV } from '../application/env';
 
 export const jwksClient = createClient({
-	jwksUri: Env.fetch('JWKS_URI'),
+	jwksUri: ENV.fetch('JWKS_URI'),
 });
