@@ -55,7 +55,7 @@ const verifyToken = (token: string, signingKey: string) => {
 	try {
 		return jwt.verify(token, signingKey) as DecodedToken;
 	} catch {
-		throw new HttpError('Not autenticated', 401);
+		throw new HttpError('Not authenticated', 401);
 	}
 };
 

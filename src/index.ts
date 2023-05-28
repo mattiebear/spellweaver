@@ -1,4 +1,4 @@
-import { db } from './db/data-source';
+import { db } from './db/db';
 import { app } from './lib/application';
 
 db.initialize().then(() => {
