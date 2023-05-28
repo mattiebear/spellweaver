@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { ENV } from '../lib/application/env';
 import { Scene } from '../models/scene';
 
-export const AppDataSource = new DataSource({
+export const db = new DataSource({
 	type: 'postgres',
 	url: ENV.fetch('DATABASE_URL'),
 	entities: [Scene],
