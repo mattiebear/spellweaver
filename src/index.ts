@@ -1,12 +1,10 @@
 import Router from '@koa/router';
 import Koa from 'koa';
-import { jwtAuthentication } from './middleware/jwt-auth';
+
 import { allowedOrigins } from './middleware/cors';
-import { Env } from './lib/env'
+import { jwtAuthentication } from './middleware/jwt-auth';
 
-Env.config()
-
-console.log('database password', process.env.DATABASE_PASSWORD)
+console.log('database password', process.env.DATABASE_PASSWORD);
 
 const app = new Koa();
 const router = new Router();
@@ -15,9 +13,8 @@ router.get('/ping', (ctx) => {
 	ctx.body = { status: 'pong' };
 });
 
-
 app.use(allowedOrigins);
-app.use(jwtAuthentication)
+app.use(jwtAuthentication);
 
 app.use(router.routes());
 app.use(router.allowedMethods());

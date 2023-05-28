@@ -2,17 +2,17 @@ import jwt from 'jsonwebtoken';
 import { Middleware, ParameterizedContext } from 'koa';
 
 import { HttpError } from '../lib/error';
-import { jwksClient } from '../lib/jwks-client';
+import { jwksClient } from '../lib/jwt/jwks-client';
 
 // TODO: Verify issuer and expirations
 interface DecodedToken {
-	"azp": string;
-  "exp": number;
-  "iat": number;
-  "iss": string;
-  "nbf": number;
-  "sid": string;
-  "sub": string;
+	azp: string;
+	exp: number;
+	iat: number;
+	iss: string;
+	nbf: number;
+	sid: string;
+	sub: string;
 }
 
 const getTokenFromHeader = (ctx: ParameterizedContext) => {
@@ -29,7 +29,7 @@ const getTokenFromHeader = (ctx: ParameterizedContext) => {
 	}
 
 	return token;
-}
+};
 
 const getSigningKey = async (token: string) => {
 	const decoded = jwt.decode(token, { complete: true });
@@ -49,7 +49,7 @@ const getSigningKey = async (token: string) => {
 	}
 
 	return signingKey;
-}
+};
 
 const verifyToken = (token: string, signingKey: string) => {
 	try {
@@ -57,8 +57,7 @@ const verifyToken = (token: string, signingKey: string) => {
 	} catch {
 		throw new HttpError('Not autenticated', 401);
 	}
-}
-
+};
 
 export const jwtAuthentication: Middleware = async (ctx, next) => {
 	const token = getTokenFromHeader(ctx);
