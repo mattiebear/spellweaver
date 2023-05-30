@@ -11,6 +11,7 @@ interface MapCreateBody {
 	name: string;
 }
 
+// POST new map
 router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 	const map = new Map();
 
@@ -28,11 +29,15 @@ router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 		throw new Error('Invalid map');
 	}
 
-	const record = await mapRepository.save(map);
-
+	ctx.body = await mapRepository.save(map);
 	// TODO: Create enum for status codes
-	ctx.body = record;
 	ctx.status = 201;
+});
+
+// GET all maps
+router.get<AppState>('/', async (ctx) => {
+	ctx.body = await mapRepository.findBy({ userId: ctx.state.userId });
+	ctx.status = 200;
 });
 
 export { router };
