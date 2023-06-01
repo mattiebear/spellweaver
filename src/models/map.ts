@@ -1,5 +1,11 @@
 import { Length } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	PrimaryGeneratedColumn,
+	UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('maps')
 export class Map {
@@ -15,4 +21,10 @@ export class Map {
 
 	@Column('json', { default: {} })
 	atlas: object;
+
+	@CreateDateColumn()
+	createdAt: Date;
+
+	@UpdateDateColumn()
+	updatedAt: Date;
 }

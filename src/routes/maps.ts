@@ -25,7 +25,6 @@ router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 
 	if (errors.length > 0) {
 		// TODO: Throw custom error with list of errors to display
-		console.log(errors);
 		throw new Error('Invalid map');
 	}
 
@@ -40,6 +39,7 @@ router.get<AppState>('/', async (ctx) => {
 	ctx.status = 200;
 });
 
+// GET map by id
 router.get<AppState, { id: string }>('/:id', async (ctx) => {
 	const map = await mapRepository.findOneBy({
 		userId: ctx.state.userId,
