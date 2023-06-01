@@ -40,4 +40,16 @@ router.get<AppState>('/', async (ctx) => {
 	ctx.status = 200;
 });
 
+router.get<AppState, { id: string }>('/:id', async (ctx) => {
+	const map = await mapRepository.findOneBy({
+		userId: ctx.state.userId,
+		id: ctx.params.id,
+	});
+
+	// TODO: Authorize
+	// TODO: Handle 404
+	ctx.body = map;
+	ctx.status = 200;
+});
+
 export { router };
