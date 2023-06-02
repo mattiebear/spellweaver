@@ -96,4 +96,21 @@ router.patch<AppState, { id: string }, MapPatchBody>('/:id', async (ctx) => {
 	ctx.status = 200;
 });
 
+// DELETE map by id
+router.delete<AppState, { id: string }>('/:id', async (ctx) => {
+	const map = await mapRepository.findOneBy({
+		userId: ctx.state.userId,
+		id: ctx.params.id,
+	});
+
+	// TODO: Handle 404
+	if (!map) {
+		throw new Error('Map not found');
+	}
+
+	await mapRepository.remove(map);
+
+	ctx.status = 204;
+});
+
 export { router };
