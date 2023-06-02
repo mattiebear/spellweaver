@@ -25,7 +25,6 @@ router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 
 	if (errors.length > 0) {
 		// TODO: Throw custom error with list of errors to display
-		console.log(errors);
 		throw new Error('Invalid map');
 	}
 
@@ -38,6 +37,80 @@ router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 router.get<AppState>('/', async (ctx) => {
 	ctx.body = await mapRepository.findBy({ userId: ctx.state.userId });
 	ctx.status = 200;
+});
+
+// GET map by id
+router.get<AppState, { id: string }>('/:id', async (ctx) => {
+	const map = await mapRepository.findOneBy({
+		userId: ctx.state.userId,
+		id: ctx.params.id,
+	});
+
+	// TODO: Authorize
+	// TODO: Handle 404
+	ctx.body = map;
+	ctx.status = 200;
+});
+
+interface MapPutBody {
+	atlas?: object;
+	name?: string;
+}
+
+interface MapPatchBody extends Partial<MapPutBody> {}
+
+// PATCH map by id
+router.patch<AppState, { id: string }, MapPatchBody>('/:id', async (ctx) => {
+	const map = await mapRepository.findOneBy({
+		userId: ctx.state.userId,
+		id: ctx.params.id,
+	});
+
+	// TODO: Handle 404
+	if (!map) {
+		throw new Error('Map not found');
+	}
+
+	// TODO: Make util to only apply properties that are defined
+	const atlas = (ctx.request.body as MapPatchBody).atlas;
+
+	if (atlas) {
+		map.atlas = atlas;
+	}
+
+	const name = (ctx.request.body as MapPatchBody).name;
+
+	if (name) {
+		map.name = name;
+	}
+
+	const errors = await validate(map);
+
+	if (errors.length > 0) {
+		// TODO: Throw custom error with list of errors to display
+		throw new Error('Invalid map');
+	}
+
+	ctx.body = await mapRepository.save(map);
+	// TODO: Create enum for status codes
+	ctx.status = 200;
+});
+
+// DELETE map by id
+router.delete<AppState, { id: string }>('/:id', async (ctx) => {
+	const map = await mapRepository.findOneBy({
+		userId: ctx.state.userId,
+		id: ctx.params.id,
+	});
+
+	// TODO: Handle 404
+	if (!map) {
+		throw new Error('Map not found');
+	}
+
+	await mapRepository.remove(map);
+
+	ctx.status = 204;
 });
 
 export { router };
