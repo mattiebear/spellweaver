@@ -7,7 +7,7 @@
 		"db:reset": "pnpm typeorm schema:drop -d src/db/db.ts",
 		"dev": "nodemon src/index.ts",
 		"format": "prettier --write .",
-		"start": "pnpm build; node ./dist/index.js",
+		"start": "pnpm build && node ./dist/index.js",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"typeorm": "typeorm-ts-node-commonjs"
 	},

@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 
 import { db } from './db';
-import { app } from './lib/application';
+import { ENV, app } from './lib/application';
 
 db.initialize().then(() => {
-	app.listen(3000);
+	const port = ENV.fetch('PORT');
 
-	console.log('Listening on port 3000');
+	app.listen(port);
+
+	console.log(`Listening on port ${port}`);
 });

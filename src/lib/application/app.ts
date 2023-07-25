@@ -1,7 +1,7 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 
-import { allowedOrigins } from '../..//middleware/cors';
+import { allowedOrigins } from '../../middleware/cors';
 import { jwtAuthentication } from '../../middleware/jwt-auth';
 import { router } from '../../routes';
 
