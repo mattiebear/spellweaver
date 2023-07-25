@@ -1,4 +1,6 @@
-import { db } from './db/db';
+import 'reflect-metadata';
+
+import { db } from './db';
 import { app } from './lib/application';
 
 db.initialize().then(() => {

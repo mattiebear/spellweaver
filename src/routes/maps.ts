@@ -2,7 +2,7 @@ import Router from '@koa/router';
 import { validate } from 'class-validator';
 
 import { mapRepository } from '../db';
-import { Map } from '../models';
+import { Map } from '../entity';
 import { AppState } from '../types/state';
 
 const router = new Router();
@@ -19,7 +19,10 @@ router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 	map.userId = ctx.state.userId;
 	// FIXME: Not sure why the types are not working here
 	map.name = (ctx.request.body as MapCreateBody).name;
-	map.atlas = {};
+	map.atlas = {
+		version: '1',
+		data: [],
+	};
 
 	const errors = await validate(map);
 

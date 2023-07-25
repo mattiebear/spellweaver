@@ -19,7 +19,12 @@ export class Map {
 	@Length(1, 255)
 	name: string;
 
-	@Column('json', { default: {} })
+	@Column('json', {
+		default: {
+			version: '0',
+			data: [],
+		},
+	})
 	atlas: object;
 
 	@CreateDateColumn()
