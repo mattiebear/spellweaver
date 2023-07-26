@@ -31,7 +31,13 @@ export class Policy {
 	}
 
 	async isAuthorized(action: Action, record: any, userId: string) {
-		for (const verifier of this.forAction(action)) {
+		const actions = this.forAction(action);
+
+		if (!actions.length) {
+			return false;
+		}
+
+		for (const verifier of actions) {
 			const authorized = await verifier(record, userId);
 
 			if (!authorized) {

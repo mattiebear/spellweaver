@@ -10,12 +10,14 @@ export const createAuthorize = ({ policies }: CreateAuthorizeConfig) => {
 	return async (action: Action, record: any, userId: string) => {
 		const policy = policies.find((policy) => record instanceof policy.entity);
 
-		if (policy) {
-			const isAuthorized = await policy.isAuthorized(action, record, userId);
+		if (!policy) {
+			throw new HttpError(HttpStatus.Forbidden);
+		}
 
-			if (!isAuthorized) {
-				throw new HttpError(HttpStatus.Forbidden);
-			}
+		const isAuthorized = await policy.isAuthorized(action, record, userId);
+
+		if (!isAuthorized) {
+			throw new HttpError(HttpStatus.Forbidden);
 		}
 
 		return true;
