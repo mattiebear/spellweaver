@@ -1,8 +1,10 @@
 import Router from '@koa/router';
 import { validate } from 'class-validator';
 
+import { authorize } from '../auth';
 import { mapRepository } from '../db';
 import { Map } from '../entity';
+import { Action } from '../lib/auth';
 import { HttpError, HttpStatus } from '../lib/http';
 import { Hydrator } from '../lib/hydrator';
 import { AppState } from '../types/state';
@@ -21,6 +23,9 @@ router.post<{}, {}, MapCreateBody>('/', async (ctx) => {
 		.supplies({ atlas: { version: '1', data: [] } })
 		.entity();
 
+	await authorize(Action.Create, map, ctx.state.userId);
+
+	// TODO: Create validation util to automatically throw
 	const errors = await validate(map);
 
 	if (errors.length > 0) {
@@ -41,7 +46,6 @@ router.get<AppState>('/', async (ctx) => {
 // GET map by id
 router.get<AppState, { id: string }>('/:id', async (ctx) => {
 	const map = await mapRepository.findOneBy({
-		userId: ctx.state.userId,
 		id: ctx.params.id,
 	});
 
@@ -49,7 +53,8 @@ router.get<AppState, { id: string }>('/:id', async (ctx) => {
 		throw new HttpError(HttpStatus.NotFound);
 	}
 
-	// TODO: Authorize
+	await authorize(Action.Read, map, ctx.state.userId);
+
 	ctx.body = map;
 	ctx.status = HttpStatus.OK;
 });
@@ -64,13 +69,14 @@ interface MapPatchBody extends Partial<MapPutBody> {}
 // PATCH map by id
 router.patch<AppState, { id: string }, MapPatchBody>('/:id', async (ctx) => {
 	const record = await mapRepository.findOneBy({
-		userId: ctx.state.userId,
 		id: ctx.params.id,
 	});
 
 	if (!record) {
 		throw new HttpError(HttpStatus.NotFound);
 	}
+
+	await authorize(Action.Update, record, ctx.state.userId);
 
 	const map = new Hydrator(ctx).to(record).hydrates('atlas', 'name').entity();
 
@@ -91,6 +97,8 @@ router.delete<AppState, { id: string }>('/:id', async (ctx) => {
 		userId: ctx.state.userId,
 		id: ctx.params.id,
 	});
+
+	await authorize(Action.Delete, map, ctx.state.userId);
 
 	if (!map) {
 		throw new HttpError(HttpStatus.NotFound);
