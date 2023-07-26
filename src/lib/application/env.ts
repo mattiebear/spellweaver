@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { Application } from './application';
+
 export class ENV {
 	private static _instance: ENV;
 
@@ -25,8 +27,7 @@ export class ENV {
 	}
 
 	private loadConfigIfExists(file: string) {
-		// TODO: Get root from application class
-		const filePath = path.resolve(process.cwd(), file);
+		const filePath = path.resolve(Application.root(), file);
 
 		const fileExists = fs.existsSync(filePath);
 
