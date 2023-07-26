@@ -4,26 +4,22 @@ import { validate } from 'class-validator';
 import { mapRepository } from '../db';
 import { Map } from '../entity';
 import { HttpError, HttpStatus } from '../lib/http';
+import { Hydrator } from '../lib/hydrator';
 import { AppState } from '../types/state';
 
-const router = new Router();
+const router = new Router<AppState>();
 
 interface MapCreateBody {
 	name: string;
 }
 
 // POST new map
-router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
-	const map = new Map();
-
-	// TODO: Make some class to do this more efficiently
-	map.userId = ctx.state.userId;
-	// FIXME: Not sure why the types are not working here
-	map.name = (ctx.request.body as MapCreateBody).name;
-	map.atlas = {
-		version: '1',
-		data: [],
-	};
+router.post<{}, {}, MapCreateBody>('/', async (ctx) => {
+	const map = new Hydrator(ctx)
+		.to(new Map())
+		.hydrates('name', 'userId')
+		.supplies({ atlas: { version: '1', data: [] } })
+		.entity();
 
 	const errors = await validate(map);
 
@@ -67,27 +63,16 @@ interface MapPatchBody extends Partial<MapPutBody> {}
 
 // PATCH map by id
 router.patch<AppState, { id: string }, MapPatchBody>('/:id', async (ctx) => {
-	const map = await mapRepository.findOneBy({
+	const record = await mapRepository.findOneBy({
 		userId: ctx.state.userId,
 		id: ctx.params.id,
 	});
 
-	if (!map) {
+	if (!record) {
 		throw new HttpError(HttpStatus.NotFound);
 	}
 
-	// TODO: Make util to only apply properties that are defined
-	const atlas = (ctx.request.body as MapPatchBody).atlas;
-
-	if (atlas) {
-		map.atlas = atlas;
-	}
-
-	const name = (ctx.request.body as MapPatchBody).name;
-
-	if (name) {
-		map.name = name;
-	}
+	const map = new Hydrator(ctx).to(record).hydrates('atlas', 'name').entity();
 
 	const errors = await validate(map);
 
