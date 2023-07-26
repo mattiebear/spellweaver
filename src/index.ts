@@ -1,7 +1,8 @@
 import 'reflect-metadata';
 
 import { db } from './db';
-import { ENV, app } from './lib/application';
+import { app } from './lib/application/app';
+import { ENV } from './lib/application/env';
 
 db.initialize().then(() => {
 	const port = ENV.fetch('PORT');
