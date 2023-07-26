@@ -7,8 +7,13 @@ export class Policy {
 
 	constructor(public entity: { new (...args: any[]): any }) {}
 
-	allow(action: Action, verifier: Verifier) {
-		this.verifiers.push([action, verifier]);
+	allow(action: Action | Action[], verifier: Verifier) {
+		const actions = Array.isArray(action) ? action : [action];
+
+		actions.forEach((action) => {
+			this.verifiers.push([action, verifier]);
+		});
+
 		return this;
 	}
 
