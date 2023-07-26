@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Middleware, ParameterizedContext } from 'koa';
 
-import { HttpError } from '../lib/error';
+import { HttpError, HttpStatus } from '../lib/http';
 import { jwksClient } from '../lib/jwt/jwks-client';
 
 // TODO: Verify issuer and expirations
@@ -19,13 +19,13 @@ const getTokenFromHeader = (ctx: ParameterizedContext) => {
 	const authorization = ctx.request.headers.authorization;
 
 	if (!authorization) {
-		throw new HttpError('No token provided', 401);
+		throw new HttpError(HttpStatus.Unauthorized, 'No token provided');
 	}
 
 	const [type, token] = authorization.split(' ');
 
 	if (type !== 'Bearer') {
-		throw new HttpError('Invalid token type', 401);
+		throw new HttpError(HttpStatus.Unauthorized, 'Invalid token type');
 	}
 
 	return token;
@@ -37,7 +37,7 @@ const getSigningKey = async (token: string) => {
 	const keyId = decoded?.header?.kid;
 
 	if (!keyId) {
-		throw new HttpError('Invalid token', 401);
+		throw new HttpError(HttpStatus.Unauthorized, 'Invalid token');
 	}
 
 	const key = await jwksClient.getSigningKey(keyId);
@@ -45,7 +45,7 @@ const getSigningKey = async (token: string) => {
 	const signingKey = key.getPublicKey();
 
 	if (!signingKey) {
-		throw new HttpError('Signing key error', 500);
+		throw new HttpError(HttpStatus.ServerError, 'Signing key error');
 	}
 
 	return signingKey;
@@ -55,7 +55,7 @@ const verifyToken = (token: string, signingKey: string) => {
 	try {
 		return jwt.verify(token, signingKey) as DecodedToken;
 	} catch {
-		throw new HttpError('Not authenticated', 401);
+		throw new HttpError(HttpStatus.Unauthorized, 'Not authenticated');
 	}
 };
 

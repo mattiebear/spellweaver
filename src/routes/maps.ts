@@ -3,6 +3,7 @@ import { validate } from 'class-validator';
 
 import { mapRepository } from '../db';
 import { Map } from '../entity';
+import { HttpError, HttpStatus } from '../lib/http';
 import { AppState } from '../types/state';
 
 const router = new Router();
@@ -32,14 +33,13 @@ router.post<AppState, {}, MapCreateBody>('/', async (ctx) => {
 	}
 
 	ctx.body = await mapRepository.save(map);
-	// TODO: Create enum for status codes
-	ctx.status = 201;
+	ctx.status = HttpStatus.Created;
 });
 
 // GET all maps
 router.get<AppState>('/', async (ctx) => {
 	ctx.body = await mapRepository.findBy({ userId: ctx.state.userId });
-	ctx.status = 200;
+	ctx.status = HttpStatus.OK;
 });
 
 // GET map by id
@@ -49,10 +49,13 @@ router.get<AppState, { id: string }>('/:id', async (ctx) => {
 		id: ctx.params.id,
 	});
 
+	if (!map) {
+		throw new HttpError(HttpStatus.NotFound);
+	}
+
 	// TODO: Authorize
-	// TODO: Handle 404
 	ctx.body = map;
-	ctx.status = 200;
+	ctx.status = HttpStatus.OK;
 });
 
 interface MapPutBody {
@@ -69,9 +72,8 @@ router.patch<AppState, { id: string }, MapPatchBody>('/:id', async (ctx) => {
 		id: ctx.params.id,
 	});
 
-	// TODO: Handle 404
 	if (!map) {
-		throw new Error('Map not found');
+		throw new HttpError(HttpStatus.NotFound);
 	}
 
 	// TODO: Make util to only apply properties that are defined
@@ -95,8 +97,7 @@ router.patch<AppState, { id: string }, MapPatchBody>('/:id', async (ctx) => {
 	}
 
 	ctx.body = await mapRepository.save(map);
-	// TODO: Create enum for status codes
-	ctx.status = 200;
+	ctx.status = HttpStatus.OK;
 });
 
 // DELETE map by id
@@ -106,14 +107,13 @@ router.delete<AppState, { id: string }>('/:id', async (ctx) => {
 		id: ctx.params.id,
 	});
 
-	// TODO: Handle 404
 	if (!map) {
-		throw new Error('Map not found');
+		throw new HttpError(HttpStatus.NotFound);
 	}
 
 	await mapRepository.remove(map);
 
-	ctx.status = 204;
+	ctx.status = HttpStatus.NoContent;
 });
 
 export { router };
