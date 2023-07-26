@@ -21,6 +21,9 @@ router.post<{}, {}, MapCreateBody>('/', async (ctx) => {
 		.supplies({ atlas: { version: '1', data: [] } })
 		.entity();
 
+	// await authorize(map, ctx.state.userId, Action.Read);
+
+	// TODO: Create validation util to automatically throw
 	const errors = await validate(map);
 
 	if (errors.length > 0) {
