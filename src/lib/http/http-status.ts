@@ -8,15 +8,6 @@ export enum HttpStatus {
 	Unauthorized = 401,
 	Forbidden = 403,
 	NotFound = 404,
+	UnprocessableContent = 422,
 	ServerError = 500,
 }
-
-export const getStatusMessage = (status: HttpStatus) => {
-	const text = Object.entries(HttpStatus).find(([, value]) => value === status);
-
-	if (text) {
-		return text[0].replaceAll(/([A-Z])/g, ' $1');
-	}
-
-	return 'An error occurred';
-};

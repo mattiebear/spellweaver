@@ -1,9 +1,30 @@
-import { getStatusMessage } from './http-status';
+type ErrorData = {
+	code: string;
+	location: string;
+};
 
 export class HttpError extends Error {
-	status: number;
-	constructor(status: number, message = getStatusMessage(status)) {
+	private data: ErrorData[] = [];
+
+	public expose = false;
+	public status: number;
+
+	constructor(status: number, message = '') {
 		super(message);
 		this.status = status;
+	}
+
+	add(location: string, code: string) {
+		this.expose = true;
+		this.data.push({ code, location });
+	}
+
+	toJSON() {
+		return {
+			...(this.message && {
+				message: this.message,
+			}),
+			data: this.data,
+		};
 	}
 }
