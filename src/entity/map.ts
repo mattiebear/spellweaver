@@ -7,12 +7,15 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 
+import { IsAtlasSchema, IsUserId } from '../lib/validation';
+
 @Entity('maps')
 export class Map {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
 	@Column()
+	@IsUserId()
 	userId: string;
 
 	@Column()
@@ -25,6 +28,7 @@ export class Map {
 			data: [],
 		},
 	})
+	@IsAtlasSchema()
 	atlas: object;
 
 	@CreateDateColumn()
