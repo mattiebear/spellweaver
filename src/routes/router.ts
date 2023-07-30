@@ -1,6 +1,7 @@
 import Router from '@koa/router';
 
 import { HttpError, HttpStatus } from '../lib/http';
+import { router as connectionsRouter } from './connections';
 import { router as mapsRouter } from './maps';
 
 const router = new Router();
@@ -16,6 +17,12 @@ router.get('/pong', () => {
 
 	throw error;
 });
+
+router.use(
+	'/connections',
+	connectionsRouter.routes(),
+	connectionsRouter.allowedMethods()
+);
 
 router.use('/maps', mapsRouter.routes(), mapsRouter.allowedMethods());
 

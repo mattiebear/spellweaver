@@ -17,6 +17,7 @@ export class HttpError extends Error {
 	add(location: string, code: string) {
 		this.expose = true;
 		this.data.push({ code, location });
+		return this;
 	}
 
 	toJSON() {
