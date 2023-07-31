@@ -1,2 +1,2 @@
-export * from './http-error';
+export * from './errors';
 export * from './http-status';

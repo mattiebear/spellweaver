@@ -18,6 +18,7 @@
 	"author": "Matthew Sells (matthew.sells@proton.me)",
 	"license": "UNLICENSED",
 	"dependencies": {
+		"@clerk/clerk-sdk-node": "^4.12.1",
 		"@koa/cors": "^4.0.0",
 		"@koa/router": "^12.0.0",
 		"class-validator": "^0.14.0",
@@ -26,7 +27,7 @@
 		"jwks-rsa": "^3.0.1",
 		"koa": "^2.14.2",
 		"koa-bodyparser": "^4.4.1",
-		"nodemon": "^2.0.22",
+		"nodemon": "^3.0.1",
 		"pg": "^8.11.1",
 		"prettier": "^2.8.8",
 		"reflect-metadata": "^0.1.13",

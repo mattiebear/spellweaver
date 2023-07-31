@@ -1,4 +1,4 @@
-import { HttpError } from '../http-error';
+import { HttpError } from '../errors/http-error';
 import { HttpStatus } from '../http-status';
 
 it('sets expose to true when a localized error is added', () => {
