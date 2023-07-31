@@ -20,6 +20,11 @@ export class HttpError extends Error {
 		return this;
 	}
 
+	disclose() {
+		this.expose = true;
+		return this;
+	}
+
 	toJSON() {
 		return {
 			...(this.message && {

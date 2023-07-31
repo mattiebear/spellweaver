@@ -19,6 +19,7 @@ interface ConnectionRequestCreateBody {
 // POST a connection/request by searching for a user via username
 router.post('/request', async (ctx) => {
 	const service = new RequestConnectionService({
+		userId: ctx.state.userId,
 		username: (ctx.request.body as ConnectionRequestCreateBody).username,
 	});
 

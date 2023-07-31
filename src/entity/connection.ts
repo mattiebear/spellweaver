@@ -13,6 +13,7 @@ export enum ConnectionStatus {
 	PendingAcceptance = 'pending',
 	AwaitingResponse = 'awaiting',
 	Accepted = 'accepted',
+	Rejected = 'rejected',
 }
 
 @Entity('connections')
@@ -23,6 +24,10 @@ export class Connection {
 	@Column()
 	@IsUserId()
 	userId: string;
+
+	@Column()
+	@IsUserId()
+	connectedUserId: string;
 
 	@Column({
 		type: 'enum',
