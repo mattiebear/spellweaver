@@ -7,6 +7,7 @@ export const db = new DataSource({
 	type: 'postgres',
 	url: ENV.fetch('DATABASE_URL'),
 	entities: [Connection, Map],
+	// TODO: Only sync local dev
 	synchronize: true,
 	logging: ENV.isDevelopment(),
 	uuidExtension: 'pgcrypto',

@@ -1,6 +1,8 @@
+import clerk from '@clerk/clerk-sdk-node';
 import Router from '@koa/router';
 import { Not } from 'typeorm';
 
+import { associateWithUser } from '../auth/user';
 import { connectionRepository } from '../db/connection-repositoy';
 import { ConnectionStatus } from '../entity';
 import { HttpStatus } from '../lib/http';
@@ -26,10 +28,14 @@ router.post('/request', async (ctx) => {
 });
 
 router.get<AppState>('/', async (ctx) => {
-	ctx.body = await connectionRepository.findBy({
+	const connections = await connectionRepository.findBy({
 		status: Not(ConnectionStatus.Rejected),
 		userId: ctx.state.userId,
 	});
+
+	const associated = await associateWithUser(connections);
+
+	ctx.body = associated;
 	ctx.status = HttpStatus.OK;
 });
 
