@@ -1,6 +1,10 @@
 import { Action } from './types';
 
-type Verifier = (record: any, userId: string) => boolean | Promise<boolean>;
+type Verifier = (
+	record: any,
+	userId: string,
+	params?: any
+) => boolean | Promise<boolean>;
 
 export class Policy {
 	private verifiers: [Action, Verifier][] = [];
@@ -30,7 +34,12 @@ export class Policy {
 		);
 	}
 
-	async isAuthorized(action: Action, record: any, userId: string) {
+	async isAuthorized(
+		action: Action,
+		record: any,
+		userId: string,
+		context?: any
+	) {
 		const actions = this.forAction(action);
 
 		if (!actions.length) {
@@ -38,7 +47,7 @@ export class Policy {
 		}
 
 		for (const verifier of actions) {
-			const authorized = await verifier(record, userId);
+			const authorized = await verifier(record, userId, context);
 
 			if (!authorized) {
 				return false;
