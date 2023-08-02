@@ -33,7 +33,10 @@ router.get<AppState>('/', async (ctx) => {
 		userId: ctx.state.userId,
 	});
 
-	const associated = await associateWithUser(connections);
+	const associated = await associateWithUser(connections, {
+		fKey: 'connectedUserId',
+		recordKey: 'connectedUser',
+	});
 
 	ctx.body = associated;
 	ctx.status = HttpStatus.OK;
