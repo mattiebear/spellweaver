@@ -14,6 +14,7 @@ export enum ConnectionStatus {
 	AwaitingResponse = 'awaiting',
 	Accepted = 'accepted',
 	Rejected = 'rejected',
+	Removed = 'removed',
 }
 
 @Entity('connections')

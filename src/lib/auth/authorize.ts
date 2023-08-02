@@ -7,14 +7,19 @@ interface CreateAuthorizeConfig {
 }
 
 export const createAuthorize = ({ policies }: CreateAuthorizeConfig) => {
-	return async (action: Action, record: any, userId: string) => {
+	return async (action: Action, record: any, userId: string, context?: any) => {
 		const policy = policies.find((policy) => record instanceof policy.entity);
 
 		if (!policy) {
 			throw new HttpError(HttpStatus.Forbidden);
 		}
 
-		const isAuthorized = await policy.isAuthorized(action, record, userId);
+		const isAuthorized = await policy.isAuthorized(
+			action,
+			record,
+			userId,
+			context
+		);
 
 		if (!isAuthorized) {
 			throw new HttpError(HttpStatus.Forbidden);
