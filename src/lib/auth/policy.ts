@@ -38,7 +38,7 @@ export class Policy {
 		action: Action,
 		record: any,
 		userId: string,
-		context: any
+		context?: any
 	) {
 		const actions = this.forAction(action);
 
