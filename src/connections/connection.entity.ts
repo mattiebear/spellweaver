@@ -3,18 +3,17 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 
 import { IsUserId } from '../common/lib/validation';
+import { ConnectionUser } from './connection-user.entity';
 
 export enum ConnectionStatus {
-	PendingAcceptance = 'pending',
-	AwaitingResponse = 'awaiting',
+	Pending = 'pending',
 	Accepted = 'accepted',
-	Rejected = 'rejected',
-	Removed = 'removed',
 }
 
 @Entity('connections')
@@ -22,21 +21,19 @@ export class Connection {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column()
-	@IsUserId()
-	userId: string;
-
-	@Column()
-	@IsUserId()
-	connectedUserId: string;
-
 	@Column({
 		type: 'enum',
 		enum: ConnectionStatus,
-		default: ConnectionStatus.PendingAcceptance,
+		default: ConnectionStatus.Pending,
 	})
 	@IsIn(Object.values(ConnectionStatus))
 	status: ConnectionStatus;
+
+	@OneToMany(
+		() => ConnectionUser,
+		(connectionUser) => connectionUser.connection
+	)
+	connectionUsers: ConnectionUser[];
 
 	@CreateDateColumn()
 	createdAt: Date;
