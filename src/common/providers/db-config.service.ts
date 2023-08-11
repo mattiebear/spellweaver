@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 
+import { ConnectionUser } from '../../connections/connection-user.entity';
 import { Connection } from '../../connections/connection.entity';
 import { Map } from '../../maps/map.entity';
 
@@ -13,7 +14,7 @@ export class DBConfigService implements TypeOrmOptionsFactory {
 		return {
 			type: 'postgres',
 			url: this.configService.get<string>('DATABASE_URL'),
-			entities: [Connection, Map],
+			entities: [Connection, ConnectionUser, Map],
 			// TODO: Only sync local dev
 			synchronize: true,
 			logging: true,
