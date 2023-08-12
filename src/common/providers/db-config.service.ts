@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 import { ConnectionUser } from '../../connections/connection-user.entity';
 import { Connection } from '../../connections/connection.entity';
@@ -22,3 +23,13 @@ export class DBConfigService implements TypeOrmOptionsFactory {
 		};
 	}
 }
+
+// TODO: Figure out how to make this work
+export const connectionSource = new DataSource({
+	type: 'postgres',
+	url: 'postgresql://hexx_manager:Qi5n!32r!bcF@localhost:5432/hexx_development',
+	entities: [Connection, ConnectionUser, Map],
+	synchronize: true,
+	logging: true,
+	uuidExtension: 'pgcrypto',
+});

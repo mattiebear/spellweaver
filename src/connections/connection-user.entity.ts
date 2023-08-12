@@ -1,4 +1,5 @@
 import { IsIn } from 'class-validator';
+import { pick } from 'ramda';
 import {
 	Column,
 	CreateDateColumn,
@@ -17,8 +18,18 @@ export enum ConnectionRole {
 	Recipient = 'recipient',
 }
 
+interface ConstructorArgs {
+	connectionId: string;
+	role: ConnectionRole;
+	userId: string;
+}
+
 @Entity('connection_users')
 export class ConnectionUser {
+	constructor(data: Partial<ConstructorArgs> = {}) {
+		Object.assign(this, pick(['connectionId', 'role', 'userId'], data));
+	}
+
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 

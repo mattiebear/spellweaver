@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { BadRequestError } from '../common/lib/validation/bad-request-error';
 import { ConflictError } from '../common/lib/validation/conflict-error';
@@ -8,29 +8,56 @@ import { ErrorCode } from '../common/lib/validation/error-code';
 import { NotFoundError } from '../common/lib/validation/not-found-error';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
-import { Connection, ConnectionStatus } from './connection.entity';
+import { ConnectionRole, ConnectionUser } from './connection-user.entity';
+import { Connection } from './connection.entity';
 import { CreateConnectionDto } from './dto/create-connection.dto';
 import { UpdateConnectionDto } from './dto/update-connection.dto';
 
 @Injectable()
 export class ConnectionsService {
 	constructor(
+		private dataSource: DataSource,
 		@InjectRepository(Connection)
 		private connectionRepository: Repository<Connection>,
-		private dataSource: DataSource,
 		@Inject(UsersService) private usersService: UsersService
 	) {}
 
-	async findAll(userId: string): Promise<Connection[]> {
-		const connections = await this.connectionRepository.findBy({
-			status: Not(ConnectionStatus.Rejected),
-			userId,
+	async findAll(userId: string) {
+		const connections = await this.dataSource
+			.getRepository(Connection)
+			.createQueryBuilder('connection')
+			.leftJoinAndSelect('connection.connectionUsers', 'connUsers')
+			.where((builder) => {
+				const subQuery = builder
+					.subQuery()
+					.select('connectionUser.connectionId')
+					.from(ConnectionUser, 'connectionUser')
+					.where('connectionUser.userId = :userId')
+					.getQuery();
+
+				return 'connection.id IN ' + subQuery;
+			})
+			.setParameter('userId', userId)
+			.getMany();
+
+		// TODO: Find a better way to do this
+		const userIds = connections.flatMap((connection) => {
+			return connection.connectionUsers.map(
+				(connectionUser) => connectionUser.userId
+			);
 		});
 
-		return this.usersService.associate(connections, {
-			fKey: 'connectedUserId',
-			recordKey: 'connectedUser',
+		const usersData = await this.usersService.findAll({ userId: userIds });
+		const users = usersData.map((data) => new User(data));
+
+		connections.forEach((connection) => {
+			connection.connectionUsers.forEach((connectionUser) => {
+				const user = users.find((user) => user.id === connectionUser.userId);
+				connectionUser.user = user;
+			});
 		});
+
+		return connections;
 	}
 
 	async findOne(id: string): Promise<Connection | null> {
@@ -62,37 +89,42 @@ export class ConnectionsService {
 				.toException();
 		}
 
-		const existing = await this.connectionRepository.findOneBy({
-			userId: user.id,
-			connectedUserId: recipient.id,
-		});
-
-		if (existing) {
-			throw new ConflictError()
-				.add('connection', ErrorCode.AlreadyExists, 'Request already sent')
-				.toException();
-		}
-
-		const userConnection = new Connection();
-		userConnection.userId = user.id;
-		userConnection.connectedUserId = recipient.id;
-		userConnection.status = ConnectionStatus.AwaitingResponse;
-
-		const recipientConnection = new Connection();
-		recipientConnection.userId = recipient.id;
-		recipientConnection.connectedUserId = user.id;
-		recipientConnection.status = ConnectionStatus.PendingAcceptance;
+		// TODO: Update to find existing
+		// const existing = await this.connectionRepository.findOneBy({
+		// 	userId: user.id,
+		// 	connectedUserId: recipient.id,
+		// });
+		//
+		// if (existing) {
+		// 	throw new ConflictError()
+		// 		.add('connection', ErrorCode.AlreadyExists, 'Request already sent')
+		// 		.toException();
+		// }
 
 		const queryRunner = this.dataSource.createQueryRunner();
 
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
 
-		let connection;
+		let connection: Connection;
 
 		try {
-			connection = await queryRunner.manager.save(userConnection);
-			await queryRunner.manager.save(recipientConnection);
+			connection = await queryRunner.manager.save(new Connection());
+
+			const connectionUsers = [
+				new ConnectionUser({
+					connectionId: connection.id,
+					role: ConnectionRole.Requester,
+					userId: user.id,
+				}),
+				new ConnectionUser({
+					connectionId: connection.id,
+					role: ConnectionRole.Recipient,
+					userId: recipient.id,
+				}),
+			];
+
+			await queryRunner.manager.save(connectionUsers);
 
 			await queryRunner.commitTransaction();
 		} catch (err) {
@@ -105,37 +137,8 @@ export class ConnectionsService {
 	}
 
 	async update(connection: Connection, dto: UpdateConnectionDto) {
-		const related = await this.connectionRepository.findOneBy({
-			userId: connection.connectedUserId,
-			connectedUserId: connection.userId,
-			status: Not(ConnectionStatus.Removed),
-		});
-
-		if (!related) {
-			throw new NotFoundError()
-				.add('related', ErrorCode.NotFound, 'No corresponding request found')
-				.toException();
-		}
-
 		Object.assign(connection, dto);
-		Object.assign(related, dto);
 
-		const queryRunner = this.dataSource.createQueryRunner();
-
-		await queryRunner.connect();
-		await queryRunner.startTransaction();
-
-		try {
-			await queryRunner.manager.save(connection);
-			await queryRunner.manager.save(related);
-
-			await queryRunner.commitTransaction();
-		} catch (err) {
-			await queryRunner.rollbackTransaction();
-		} finally {
-			await queryRunner.release();
-		}
-
-		return connection;
+		return this.connectionRepository.save(connection);
 	}
 }

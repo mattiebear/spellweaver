@@ -4,10 +4,6 @@ import { ConnectionStatus } from '../connection.entity';
 
 export class UpdateConnectionDto {
 	@IsString()
-	@IsIn([
-		ConnectionStatus.Rejected,
-		ConnectionStatus.Accepted,
-		ConnectionStatus.Removed,
-	])
+	@IsIn([ConnectionStatus.Accepted])
 	status: string;
 }
