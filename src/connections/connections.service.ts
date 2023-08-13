@@ -23,22 +23,7 @@ export class ConnectionsService {
 	) {}
 
 	async findAll(userId: string) {
-		const connections = await this.dataSource
-			.getRepository(Connection)
-			.createQueryBuilder('connection')
-			.leftJoinAndSelect('connection.connectionUsers', 'connUsers')
-			.where((builder) => {
-				const subQuery = builder
-					.subQuery()
-					.select('connectionUser.connectionId')
-					.from(ConnectionUser, 'connectionUser')
-					.where('connectionUser.userId = :userId')
-					.getQuery();
-
-				return 'connection.id IN ' + subQuery;
-			})
-			.setParameter('userId', userId)
-			.getMany();
+		const connections = await this.getUserConnections(userId);
 
 		// TODO: Find a better way to do this
 		const userIds = connections.flatMap((connection) => {
@@ -89,17 +74,22 @@ export class ConnectionsService {
 				.toException();
 		}
 
-		// TODO: Update to find existing
-		// const existing = await this.connectionRepository.findOneBy({
-		// 	userId: user.id,
-		// 	connectedUserId: recipient.id,
-		// });
-		//
-		// if (existing) {
-		// 	throw new ConflictError()
-		// 		.add('connection', ErrorCode.AlreadyExists, 'Request already sent')
-		// 		.toException();
-		// }
+		const currentConnections = await this.getUserConnections(user.id);
+
+		if (
+			currentConnections.some((connection) => {
+				return (
+					connection.connectionUsers.some((conn) => conn.userId === user.id) &&
+					connection.connectionUsers.some(
+						(conn) => conn.userId === recipient.id
+					)
+				);
+			})
+		) {
+			throw new ConflictError()
+				.add('connection', ErrorCode.AlreadyExists, 'Request already sent')
+				.toException();
+		}
 
 		const queryRunner = this.dataSource.createQueryRunner();
 
@@ -111,20 +101,17 @@ export class ConnectionsService {
 		try {
 			connection = await queryRunner.manager.save(new Connection());
 
-			const connectionUsers = [
-				new ConnectionUser({
-					connectionId: connection.id,
-					role: ConnectionRole.Requester,
-					userId: user.id,
-				}),
-				new ConnectionUser({
-					connectionId: connection.id,
-					role: ConnectionRole.Recipient,
-					userId: recipient.id,
-				}),
-			];
+			const recipientConn = new ConnectionUser();
+			recipientConn.connection = connection;
+			recipientConn.role = ConnectionRole.Recipient;
+			recipientConn.userId = recipient.id;
+			await queryRunner.manager.save(recipientConn);
 
-			await queryRunner.manager.save(connectionUsers);
+			const requesterConn = new ConnectionUser();
+			requesterConn.connection = connection;
+			requesterConn.role = ConnectionRole.Requester;
+			requesterConn.userId = user.id;
+			await queryRunner.manager.save(requesterConn);
 
 			await queryRunner.commitTransaction();
 		} catch (err) {
@@ -140,5 +127,35 @@ export class ConnectionsService {
 		Object.assign(connection, dto);
 
 		return this.connectionRepository.save(connection);
+	}
+
+	async destroy(connection: Connection) {
+		await this.dataSource
+			.createQueryBuilder()
+			.delete()
+			.from(ConnectionUser)
+			.where('connectionId = :id', { id: connection.id })
+			.execute();
+
+		return this.connectionRepository.remove(connection, {});
+	}
+
+	private getUserConnections(userId: string) {
+		return this.dataSource
+			.getRepository(Connection)
+			.createQueryBuilder('connection')
+			.leftJoinAndSelect('connection.connectionUsers', 'connUsers')
+			.where((builder) => {
+				const subQuery = builder
+					.subQuery()
+					.select('connectionUser.connectionId')
+					.from(ConnectionUser, 'connectionUser')
+					.where('connectionUser.userId = :userId')
+					.getQuery();
+
+				return 'connection.id IN ' + subQuery;
+			})
+			.setParameter('userId', userId)
+			.getMany();
 	}
 }

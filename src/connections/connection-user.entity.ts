@@ -4,6 +4,7 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	JoinColumn,
 	ManyToOne,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
@@ -27,6 +28,8 @@ interface ConstructorArgs {
 @Entity('connection_users')
 export class ConnectionUser {
 	constructor(data: Partial<ConstructorArgs> = {}) {
+		console.log('data is', pick(['connectionId', 'role', 'userId'], data));
+
 		Object.assign(this, pick(['connectionId', 'role', 'userId'], data));
 	}
 
