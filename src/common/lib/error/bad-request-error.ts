@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { ValidationError } from './validation-error';
+import { HttpError } from './http-error';
 
-export class BadRequestError extends ValidationError {
+export class BadRequestError extends HttpError {
 	constructor() {
 		super(HttpStatus.BAD_REQUEST, 'Bad request');
 	}

@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
-import { BadRequestError } from '../common/lib/validation/bad-request-error';
-import { ConflictError } from '../common/lib/validation/conflict-error';
-import { ErrorCode } from '../common/lib/validation/error-code';
-import { NotFoundError } from '../common/lib/validation/not-found-error';
+import { BadRequestError } from '../common/lib/error/bad-request-error';
+import { ConflictError } from '../common/lib/error/conflict-error';
+import { ErrorCode } from '../common/lib/error/error-code';
+import { NotFoundError } from '../common/lib/error/not-found-error';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { ConnectionRole, ConnectionUser } from './connection-user.entity';
@@ -51,9 +51,11 @@ export class ConnectionsService {
 
 	async create(dto: CreateConnectionDto, user: User) {
 		if (!dto.username) {
-			throw new BadRequestError()
-				.add('username', ErrorCode.Required, 'Username is required')
-				.toException();
+			throw new BadRequestError().add(
+				'username',
+				ErrorCode.Required,
+				'Username is required'
+			);
 		}
 
 		const users = await this.usersService.findAll({
@@ -61,17 +63,21 @@ export class ConnectionsService {
 		});
 
 		if (!users.length) {
-			throw new NotFoundError()
-				.add('username', ErrorCode.NotFound, 'No user found with that name')
-				.toException();
+			throw new NotFoundError().add(
+				'username',
+				ErrorCode.NotFound,
+				'No user found with that name'
+			);
 		}
 
 		const recipient = users[0];
 
 		if (user.id === recipient.id) {
-			throw new ConflictError()
-				.add('username', ErrorCode.Invalid, 'Cannot send a request to yourself')
-				.toException();
+			throw new ConflictError().add(
+				'username',
+				ErrorCode.Invalid,
+				'Cannot send a request to yourself'
+			);
 		}
 
 		const currentConnections = await this.getUserConnections(user.id);
@@ -86,9 +92,11 @@ export class ConnectionsService {
 				);
 			})
 		) {
-			throw new ConflictError()
-				.add('connection', ErrorCode.AlreadyExists, 'Request already sent')
-				.toException();
+			throw new ConflictError().add(
+				'connection',
+				ErrorCode.AlreadyExists,
+				'Request already sent'
+			);
 		}
 
 		const queryRunner = this.dataSource.createQueryRunner();

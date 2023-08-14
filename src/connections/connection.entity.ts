@@ -31,8 +31,7 @@ export class Connection {
 
 	@OneToMany(
 		() => ConnectionUser,
-		(connectionUser) => connectionUser.connection,
-		{ cascade: ['remove'] }
+		(connectionUser) => connectionUser.connection
 	)
 	connectionUsers: ConnectionUser[];
 

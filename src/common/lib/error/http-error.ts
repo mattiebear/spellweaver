@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
 type ErrorData = {
 	code: string;
@@ -6,22 +6,20 @@ type ErrorData = {
 	message: string;
 };
 
-export class ValidationError extends Error {
+export class HttpError extends Error {
 	private data: ErrorData[] = [];
 
-	public expose = false;
 	public status: number;
 
 	constructor(
-		status: number = HttpStatus.UNPROCESSABLE_ENTITY,
-		message = 'Unprocessable entity'
+		status: number = HttpStatus.INTERNAL_SERVER_ERROR,
+		message = 'Unknown error'
 	) {
 		super(message);
 		this.status = status;
 	}
 
 	add(location: string, code: string, message: string) {
-		this.expose = true;
 		this.data.push({ code, location, message });
 		return this;
 	}
@@ -33,9 +31,5 @@ export class ValidationError extends Error {
 			}),
 			data: this.data,
 		};
-	}
-
-	toException() {
-		return new HttpException(this.toJSON(), this.status);
 	}
 }

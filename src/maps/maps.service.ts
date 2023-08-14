@@ -22,11 +22,10 @@ export class MapsService {
 		return this.mapsRepository.findOneBy({ id });
 	}
 
-	create(dto: CreateMapDto, user: User) {
+	create(dto: CreateMapDto, user: User): Promise<Map> {
 		const map = new Map();
 
-		Object.assign(map, {
-			...dto,
+		Object.assign(map, dto, {
 			userId: user.id,
 			atlas: { version: '1', data: [] },
 		});
@@ -35,9 +34,7 @@ export class MapsService {
 	}
 
 	update(map: Map, dto: UpdateMapDto) {
-		Object.assign(map, {
-			...dto,
-		});
+		Object.assign(map, dto);
 
 		return this.mapsRepository.save(map);
 	}
