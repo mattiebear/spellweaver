@@ -30,7 +30,7 @@ export class ConnectionsController {
 		@CurrentUser() user: User,
 		@Body() createConnectionDto: CreateConnectionDto
 	) {
-		return this.connectionsService.create(createConnectionDto, user);
+		return this.connectionsService.create(user, createConnectionDto);
 	}
 
 	@Patch(':id')
@@ -39,16 +39,12 @@ export class ConnectionsController {
 		@Param('id') id: string,
 		@Body() updateConnectionDto: UpdateConnectionDto
 	) {
-		const connection = await this.connectionsService.findOne(id);
-
-		return this.connectionsService.update(connection, updateConnectionDto);
+		return this.connectionsService.update(user, id, updateConnectionDto);
 	}
 
 	@Delete(':id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async destroy(@CurrentUser() user: User, @Param('id') id: string) {
-		const connection = await this.connectionsService.findOne(id);
-
-		return this.connectionsService.destroy(connection);
+		return this.connectionsService.destroy(user, id);
 	}
 }

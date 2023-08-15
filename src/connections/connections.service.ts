@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -46,11 +46,26 @@ export class ConnectionsService {
 		return connections;
 	}
 
-	async findOne(id: string): Promise<Connection | null> {
-		return this.connectionRepository.findOneBy({ id });
+	async findOne(user: User, id: string): Promise<Connection> {
+		const connection = await this.connectionRepository.findOne({
+			where: { id },
+			relations: {
+				connectionUsers: true,
+			},
+		});
+
+		const isConnectionUser = connection?.connectionUsers.some(
+			(cu) => cu.userId === user.id
+		);
+
+		if (!connection || !isConnectionUser) {
+			throw new NotFoundException();
+		}
+
+		return connection;
 	}
 
-	async create(dto: CreateConnectionDto, user: User) {
+	async create(user: User, dto: CreateConnectionDto) {
 		if (!dto.username) {
 			throw new BadRequestError().add(
 				'username',
@@ -132,13 +147,17 @@ export class ConnectionsService {
 		return connection;
 	}
 
-	async update(connection: Connection, dto: UpdateConnectionDto) {
+	async update(user: User, id: string, dto: UpdateConnectionDto) {
+		const connection = await this.findOne(user, id);
+
 		Object.assign(connection, dto);
 
 		return this.connectionRepository.save(connection);
 	}
 
-	async destroy(connection: Connection) {
+	async destroy(user: User, id: string) {
+		const connection = await this.findOne(user, id);
+
 		await this.dataSource
 			.createQueryBuilder()
 			.delete()
@@ -146,7 +165,7 @@ export class ConnectionsService {
 			.where('connectionId = :id', { id: connection.id })
 			.execute();
 
-		return this.connectionRepository.remove(connection, {});
+		return this.connectionRepository.remove(connection);
 	}
 
 	private getUserConnections(user: User) {
