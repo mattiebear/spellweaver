@@ -22,17 +22,17 @@ export class MapsController {
 
 	@Get()
 	getList(@CurrentUser() user: User) {
-		return this.mapsService.findAll(user.id);
+		return this.mapsService.findAll(user);
 	}
 
 	@Get(':id')
 	async getDetail(@CurrentUser() user: User, @Param('id') id: string) {
-		return await this.mapsService.findOne(id);
+		return await this.mapsService.findOne(user, id);
 	}
 
 	@Post()
 	create(@CurrentUser() user: User, @Body() createMapDto: CreateMapDto) {
-		return this.mapsService.create(createMapDto, user);
+		return this.mapsService.create(user, createMapDto);
 	}
 
 	@Patch(':id')
@@ -41,16 +41,12 @@ export class MapsController {
 		@Param('id') id: string,
 		@Body() updateMapDto: UpdateMapDto
 	) {
-		const map = await this.mapsService.findOne(id);
-
-		return this.mapsService.update(map, updateMapDto);
+		return this.mapsService.update(user, id, updateMapDto);
 	}
 
 	@Delete(':id')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async destroy(@CurrentUser() user: User, @Param('id') id: string) {
-		const map = await this.mapsService.findOne(id);
-
-		return this.mapsService.destroy(map);
+		return this.mapsService.destroy(user, id);
 	}
 }

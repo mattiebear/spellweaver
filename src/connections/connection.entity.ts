@@ -8,7 +8,6 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 
-import { IsUserId } from '../common/lib/validation';
 import { ConnectionUser } from './connection-user.entity';
 
 export enum ConnectionStatus {

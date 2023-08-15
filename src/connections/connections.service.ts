@@ -22,8 +22,8 @@ export class ConnectionsService {
 		@Inject(UsersService) private usersService: UsersService
 	) {}
 
-	async findAll(userId: string) {
-		const connections = await this.getUserConnections(userId);
+	async findAll(user: User) {
+		const connections = await this.getUserConnections(user);
 
 		// TODO: Find a better way to do this
 		const userIds = connections.flatMap((connection) => {
@@ -37,8 +37,9 @@ export class ConnectionsService {
 
 		connections.forEach((connection) => {
 			connection.connectionUsers.forEach((connectionUser) => {
-				const user = users.find((user) => user.id === connectionUser.userId);
-				connectionUser.user = user;
+				connectionUser.user = users.find(
+					(user) => user.id === connectionUser.userId
+				);
 			});
 		});
 
@@ -80,7 +81,7 @@ export class ConnectionsService {
 			);
 		}
 
-		const currentConnections = await this.getUserConnections(user.id);
+		const currentConnections = await this.getUserConnections(user);
 
 		if (
 			currentConnections.some((connection) => {
@@ -148,7 +149,7 @@ export class ConnectionsService {
 		return this.connectionRepository.remove(connection, {});
 	}
 
-	private getUserConnections(userId: string) {
+	private getUserConnections(user: User) {
 		return this.dataSource
 			.getRepository(Connection)
 			.createQueryBuilder('connection')
@@ -163,7 +164,7 @@ export class ConnectionsService {
 
 				return 'connection.id IN ' + subQuery;
 			})
-			.setParameter('userId', userId)
+			.setParameter('userId', user.id)
 			.getMany();
 	}
 }

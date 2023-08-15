@@ -22,7 +22,6 @@
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "dependencies": {
-    "@casl/ability": "^6.5.0",
     "@clerk/clerk-sdk-node": "^4.12.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",

@@ -22,7 +22,7 @@ export class ConnectionsController {
 
 	@Get()
 	getList(@CurrentUser() user: User) {
-		return this.connectionsService.findAll(user.id);
+		return this.connectionsService.findAll(user);
 	}
 
 	@Post()
