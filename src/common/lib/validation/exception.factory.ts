@@ -1,9 +1,9 @@
 import { ValidationError as BaseError } from 'class-validator';
 
-import { ValidationError } from './validation-error';
+import { HttpError } from '../error/http-error';
 
 export const exceptionFactory = (errors: BaseError[]) => {
-	const error = new ValidationError();
+	const error = new HttpError();
 
 	for (const err of errors) {
 		if (err.constraints) {
@@ -13,5 +13,5 @@ export const exceptionFactory = (errors: BaseError[]) => {
 		}
 	}
 
-	throw error.toException();
+	throw error;
 };

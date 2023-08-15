@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { ValidationError } from './validation-error';
+import { HttpError } from './http-error';
 
-export class ConflictError extends ValidationError {
+export class ConflictError extends HttpError {
 	constructor() {
 		super(HttpStatus.CONFLICT, 'Conflict');
 	}

@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { ValidationError } from './validation-error';
+import { HttpError } from './http-error';
 
-export class NotFoundError extends ValidationError {
+export class NotFoundError extends HttpError {
 	constructor() {
 		super(HttpStatus.NOT_FOUND, 'Not found');
 	}

@@ -1,11 +1,11 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
-import { BadRequestError } from '../common/lib/validation/bad-request-error';
-import { ConflictError } from '../common/lib/validation/conflict-error';
-import { ErrorCode } from '../common/lib/validation/error-code';
-import { NotFoundError } from '../common/lib/validation/not-found-error';
+import { BadRequestError } from '../common/lib/error/bad-request-error';
+import { ConflictError } from '../common/lib/error/conflict-error';
+import { ErrorCode } from '../common/lib/error/error-code';
+import { NotFoundError } from '../common/lib/error/not-found-error';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { ConnectionRole, ConnectionUser } from './connection-user.entity';
@@ -22,8 +22,8 @@ export class ConnectionsService {
 		@Inject(UsersService) private usersService: UsersService
 	) {}
 
-	async findAll(userId: string) {
-		const connections = await this.getUserConnections(userId);
+	async findAll(user: User) {
+		const connections = await this.getUserConnections(user);
 
 		// TODO: Find a better way to do this
 		const userIds = connections.flatMap((connection) => {
@@ -37,23 +37,41 @@ export class ConnectionsService {
 
 		connections.forEach((connection) => {
 			connection.connectionUsers.forEach((connectionUser) => {
-				const user = users.find((user) => user.id === connectionUser.userId);
-				connectionUser.user = user;
+				connectionUser.user = users.find(
+					(user) => user.id === connectionUser.userId
+				);
 			});
 		});
 
 		return connections;
 	}
 
-	async findOne(id: string): Promise<Connection | null> {
-		return this.connectionRepository.findOneBy({ id });
+	async findOne(user: User, id: string): Promise<Connection> {
+		const connection = await this.connectionRepository.findOne({
+			where: { id },
+			relations: {
+				connectionUsers: true,
+			},
+		});
+
+		const isConnectionUser = connection?.connectionUsers.some(
+			(cu) => cu.userId === user.id
+		);
+
+		if (!connection || !isConnectionUser) {
+			throw new NotFoundException();
+		}
+
+		return connection;
 	}
 
-	async create(dto: CreateConnectionDto, user: User) {
+	async create(user: User, dto: CreateConnectionDto) {
 		if (!dto.username) {
-			throw new BadRequestError()
-				.add('username', ErrorCode.Required, 'Username is required')
-				.toException();
+			throw new BadRequestError().add(
+				'username',
+				ErrorCode.Required,
+				'Username is required'
+			);
 		}
 
 		const users = await this.usersService.findAll({
@@ -61,20 +79,24 @@ export class ConnectionsService {
 		});
 
 		if (!users.length) {
-			throw new NotFoundError()
-				.add('username', ErrorCode.NotFound, 'No user found with that name')
-				.toException();
+			throw new NotFoundError().add(
+				'username',
+				ErrorCode.NotFound,
+				'No user found with that name'
+			);
 		}
 
 		const recipient = users[0];
 
 		if (user.id === recipient.id) {
-			throw new ConflictError()
-				.add('username', ErrorCode.Invalid, 'Cannot send a request to yourself')
-				.toException();
+			throw new ConflictError().add(
+				'username',
+				ErrorCode.Invalid,
+				'Cannot send a request to yourself'
+			);
 		}
 
-		const currentConnections = await this.getUserConnections(user.id);
+		const currentConnections = await this.getUserConnections(user);
 
 		if (
 			currentConnections.some((connection) => {
@@ -86,9 +108,11 @@ export class ConnectionsService {
 				);
 			})
 		) {
-			throw new ConflictError()
-				.add('connection', ErrorCode.AlreadyExists, 'Request already sent')
-				.toException();
+			throw new ConflictError().add(
+				'connection',
+				ErrorCode.AlreadyExists,
+				'Request already sent'
+			);
 		}
 
 		const queryRunner = this.dataSource.createQueryRunner();
@@ -123,13 +147,17 @@ export class ConnectionsService {
 		return connection;
 	}
 
-	async update(connection: Connection, dto: UpdateConnectionDto) {
+	async update(user: User, id: string, dto: UpdateConnectionDto) {
+		const connection = await this.findOne(user, id);
+
 		Object.assign(connection, dto);
 
 		return this.connectionRepository.save(connection);
 	}
 
-	async destroy(connection: Connection) {
+	async destroy(user: User, id: string) {
+		const connection = await this.findOne(user, id);
+
 		await this.dataSource
 			.createQueryBuilder()
 			.delete()
@@ -137,10 +165,10 @@ export class ConnectionsService {
 			.where('connectionId = :id', { id: connection.id })
 			.execute();
 
-		return this.connectionRepository.remove(connection, {});
+		return this.connectionRepository.remove(connection);
 	}
 
-	private getUserConnections(userId: string) {
+	private getUserConnections(user: User) {
 		return this.dataSource
 			.getRepository(Connection)
 			.createQueryBuilder('connection')
@@ -155,7 +183,7 @@ export class ConnectionsService {
 
 				return 'connection.id IN ' + subQuery;
 			})
-			.setParameter('userId', userId)
+			.setParameter('userId', user.id)
 			.getMany();
 	}
 }

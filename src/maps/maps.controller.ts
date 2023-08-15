@@ -10,9 +10,7 @@ import {
 	Post,
 } from '@nestjs/common';
 
-import { AclService } from '../acl/acl.service';
-import { Action } from '../acl/action';
-import { User as GetUser } from '../common/decorators/user.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
 import { CreateMapDto } from './dto/create-map.dto';
 import { UpdateMapDto } from './dto/update-map.dto';
@@ -20,52 +18,35 @@ import { MapsService } from './maps.service';
 
 @Controller('maps')
 export class MapsController {
-	constructor(
-		private mapsService: MapsService,
-		private aclService: AclService
-	) {}
+	constructor(private mapsService: MapsService) {}
 
 	@Get()
-	getList(@GetUser() user: User) {
-		this.aclService.verifyList(user, 'Map');
-
-		return this.mapsService.findAll(user.id);
+	getList(@CurrentUser() user: User) {
+		return this.mapsService.findAll(user);
 	}
 
 	@Get(':id')
-	async getDetail(@Param('id') id: string, @GetUser() user: User) {
-		const map = await this.mapsService.findOne(id);
-
-		this.aclService.verify(map, user, Action.Read);
-
-		return map;
+	async getDetail(@CurrentUser() user: User, @Param('id') id: string) {
+		return await this.mapsService.findOne(user, id);
 	}
 
 	@Post()
-	create(@Body() createMapDto: CreateMapDto, @GetUser() user: User) {
-		return this.mapsService.create(createMapDto, user);
+	create(@CurrentUser() user: User, @Body() createMapDto: CreateMapDto) {
+		return this.mapsService.create(user, createMapDto);
 	}
 
 	@Patch(':id')
 	async update(
+		@CurrentUser() user: User,
 		@Param('id') id: string,
-		@Body() updateMapDto: UpdateMapDto,
-		@GetUser() user: User
+		@Body() updateMapDto: UpdateMapDto
 	) {
-		const map = await this.mapsService.findOne(id);
-
-		this.aclService.verify(map, user, Action.Update);
-
-		return this.mapsService.update(map, updateMapDto);
+		return this.mapsService.update(user, id, updateMapDto);
 	}
 
 	@Delete(':id')
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async destroy(@Param('id') id: string, @GetUser() user: User) {
-		const map = await this.mapsService.findOne(id);
-
-		this.aclService.verify(map, user, Action.Delete);
-
-		return this.mapsService.destroy(map);
+	async destroy(@CurrentUser() user: User, @Param('id') id: string) {
+		return this.mapsService.destroy(user, id);
 	}
 }

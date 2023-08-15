@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ACLModule } from './acl/acl.module';
 import { JwtMiddleware } from './common/middleware/jwt.middleware';
 import { DBConfigService } from './common/providers/db-config.service';
 import { JwtService } from './common/providers/jwt.service';
@@ -21,7 +20,6 @@ import { MapsModule } from './maps/maps.module';
 			useClass: DBConfigService,
 			inject: [ConfigService],
 		}),
-		ACLModule,
 		ConnectionsModule,
 		MapsModule,
 		HealthModule,

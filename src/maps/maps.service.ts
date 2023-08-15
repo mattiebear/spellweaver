@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -14,19 +14,24 @@ export class MapsService {
 		private mapsRepository: Repository<Map>
 	) {}
 
-	findAll(userId: string): Promise<Map[]> {
-		return this.mapsRepository.findBy({ userId });
+	findAll(user: User): Promise<Map[]> {
+		return this.mapsRepository.findBy({ userId: user.id });
 	}
 
-	findOne(id: string): Promise<Map | null> {
-		return this.mapsRepository.findOneBy({ id });
+	async findOne(user: User, id: string): Promise<Map> {
+		const map = await this.mapsRepository.findOneBy({ id, userId: user.id });
+
+		if (!map) {
+			throw new NotFoundException();
+		}
+
+		return map;
 	}
 
-	create(dto: CreateMapDto, user: User) {
+	create(user: User, dto: CreateMapDto): Promise<Map> {
 		const map = new Map();
 
-		Object.assign(map, {
-			...dto,
+		Object.assign(map, dto, {
 			userId: user.id,
 			atlas: { version: '1', data: [] },
 		});
@@ -34,15 +39,17 @@ export class MapsService {
 		return this.mapsRepository.save(map);
 	}
 
-	update(map: Map, dto: UpdateMapDto) {
-		Object.assign(map, {
-			...dto,
-		});
+	async update(user: User, id: string, dto: UpdateMapDto) {
+		const map = await this.findOne(user, id);
+
+		Object.assign(map, dto);
 
 		return this.mapsRepository.save(map);
 	}
 
-	destroy(map: Map) {
+	async destroy(user: User, id: string) {
+		const map = await this.findOne(user, id);
+
 		return this.mapsRepository.remove(map);
 	}
 }

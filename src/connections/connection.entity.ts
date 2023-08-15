@@ -8,7 +8,6 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 
-import { IsUserId } from '../common/lib/validation';
 import { ConnectionUser } from './connection-user.entity';
 
 export enum ConnectionStatus {
@@ -31,8 +30,7 @@ export class Connection {
 
 	@OneToMany(
 		() => ConnectionUser,
-		(connectionUser) => connectionUser.connection,
-		{ cascade: ['remove'] }
+		(connectionUser) => connectionUser.connection
 	)
 	connectionUsers: ConnectionUser[];
 
