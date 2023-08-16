@@ -5,11 +5,14 @@ import { ConnectionsService } from './connections.service';
 
 describe('ConnectionsController', () => {
 	let controller: ConnectionsController;
+	let mockConnectionsService = {};
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			controllers: [ConnectionsController],
-			providers: [ConnectionsService],
+			providers: [
+				{ provide: ConnectionsService, useValue: mockConnectionsService },
+			],
 		}).compile();
 
 		controller = module.get<ConnectionsController>(ConnectionsController);

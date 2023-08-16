@@ -8,6 +8,7 @@ import { JwtService } from './common/providers/jwt.service';
 import { ConnectionsModule } from './connections/connections.module';
 import { HealthModule } from './health/health.module';
 import { MapsModule } from './maps/maps.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
 	imports: [
@@ -23,6 +24,7 @@ import { MapsModule } from './maps/maps.module';
 		ConnectionsModule,
 		MapsModule,
 		HealthModule,
+		SessionsModule,
 	],
 	providers: [ConfigService, JwtService],
 })
