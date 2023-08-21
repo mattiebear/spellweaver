@@ -15,15 +15,15 @@ class ConnectionsController < ApplicationController
     render json: ConnectionBlueprint.render(service.result)
   end
 
-	def update
-		connection = Connection.find(params[:id])
+  def update
+    connection = Connection.find(params[:id])
 
     authorize connection
 
     connection.update(connection_params)
 
-		render json: ConnectionBlueprint.render(connection)
-	end
+    render json: ConnectionBlueprint.render(connection)
+  end
 
   def destroy
     connection = Connection.find(params[:id])
@@ -33,9 +33,9 @@ class ConnectionsController < ApplicationController
     connection.destroy!
   end
 
-	private
+  private
 
-	def connection_params
-		params.require(:connection).permit(:status)
-	end
+  def connection_params
+    params.require(:connection).permit(:status)
+  end
 end
