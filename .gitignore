@@ -24,3 +24,6 @@
 
 # Spec coverage
 /coverage
+
+# Local config
+.DS_Store

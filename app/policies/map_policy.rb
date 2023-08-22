@@ -12,7 +12,7 @@ class MapPolicy < ApplicationPolicy
   end
 
   def show?
-    record.user_id == user.id
+    true
   end
 
   def update?
