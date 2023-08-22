@@ -27,9 +27,23 @@ class GameSessionsController < ApplicationController
     render json: GameSessionBlueprint.render(service.result)
   end
 
+  def update
+    game_session = policy_scope(GameSession).find(params[:id])
+
+    authorize game_session
+
+    game_session.update!(game_session_params)
+
+    render json: GameSessionBlueprint.render(game_session)
+  end
+
   private
 
   def filters
     Rest::ListFilters.new(params, :status).filters
+  end
+
+  def game_session_params
+    params.require(:game_session).permit(:status)
   end
 end
