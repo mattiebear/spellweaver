@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class GameSessionsController < ApplicationController
+  def index
+    game_sessions = policy_scope(GameSession)
+
+    render json: GameSessionBlueprint.render(game_sessions)
+  end
+
   def create
     authorize :game_session
 
