@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'securerandom'
+
 FactoryBot.define do
   factory :user, class: 'Rogue::User' do
+    id { "user_#{SecureRandom.hex}" }
     image_url { 'https://www.example.com/image' }
 
     sequence(:username) { |n| "user#{n}" }
-    sequence(:id) { |n| "user_#{n}" }
   end
 end

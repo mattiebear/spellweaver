@@ -3,9 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe GameSessionPolicy, type: :policy do
-  subject { described_class }
-
-  let(:user) { User.new }
+  let(:user) { build(:user) }
 
   permissions '.scope' do
     pending "add some examples to (or delete) #{__FILE__}"
