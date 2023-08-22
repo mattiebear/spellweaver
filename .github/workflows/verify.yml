@@ -9,9 +9,7 @@ jobs:
       postgres:
         image: postgres:14-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ""
-          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
     steps:
@@ -23,9 +21,6 @@ jobs:
           bundler-cache: true
       - name: Run unit tests
         env:
-          PGHOST: postgres
-          PGUSER: postgres
-          PGPORT: ${{ job.services.postgres.ports[5432] }}
           RAILS_ENV: test
         run: |
           bin/rails db:create db:schema:load
