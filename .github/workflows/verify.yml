@@ -23,7 +23,9 @@ jobs:
           bundler-cache: true
       - name: Run unit tests
         env:
-          DATABASE_URL: postgresql://postgres@postgres:5432/spellweaver_test
+          PGHOST: postgres
+          PGUSER: postgres
+          PGPORT: ${{ job.services.postgres.ports[5432] }}
           RAILS_ENV: test
         run: |
           bin/rails db:create db:schema:load
