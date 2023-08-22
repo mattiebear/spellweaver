@@ -9,13 +9,9 @@ class GameSession < ApplicationRecord
     complete: 2
   }
 
-  validates :name, length: { in: 0..100 }
+  validates :name, length: { maximum: 100 }
 
   scope :with_user, ->(user) { where(id: Player.select(:game_session_id).where(user_id: user.id)) }
-
-  def has_owner?(user)
-    owner.user_id == user.id
-  end
 
   def includes_user?(user)
     players.find_by(user_id: user.id).present?
@@ -23,5 +19,9 @@ class GameSession < ApplicationRecord
 
   def owner
     players.find_by(role: 'owner')
+  end
+
+  def owner?(user)
+    owner.user_id == user.id
   end
 end

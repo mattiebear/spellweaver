@@ -2,8 +2,14 @@
 
 FactoryBot.define do
   factory :player do
-    role { 1 }
-    game_session { nil }
-    user_id { 'MyString' }
+    role { 'participant' }
+
+    sequence(:user_id) { |n| "user_#{n}" }
+
+    game_session
+
+    after(:build) do |player|
+      player.user = build(:user, id: player.user_id)
+    end
   end
 end

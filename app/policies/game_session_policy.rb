@@ -16,6 +16,6 @@ class GameSessionPolicy < ApplicationPolicy
   end
 
   def update?
-    record.has_owner?(user)
+    record.owner?(user)
   end
 end

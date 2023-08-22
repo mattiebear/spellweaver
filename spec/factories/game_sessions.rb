@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :game_session do
-    status { 1 }
-    name { 'MyString' }
+    status { 'pending' }
+    name { 'Game Session' }
   end
 end
