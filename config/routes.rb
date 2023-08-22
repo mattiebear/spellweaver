@@ -4,5 +4,6 @@ Rails.application.routes.draw do
   get '/ping', to: 'health#index'
 
   resources :connections
+  resources :game_sessions
   resources :maps
 end

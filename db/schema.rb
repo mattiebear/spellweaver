@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_18_032253) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_21_122440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -31,6 +31,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_18_032253) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "game_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "status", default: 0
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "maps", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "user_id", null: false
     t.string "name", null: false
@@ -41,5 +48,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_18_032253) do
     t.index ["user_id"], name: "index_maps_on_user_id"
   end
 
+  create_table "players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "role", default: 0
+    t.uuid "game_session_id", null: false
+    t.string "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_session_id"], name: "index_players_on_game_session_id"
+    t.index ["user_id"], name: "index_players_on_user_id"
+  end
+
   add_foreign_key "connection_users", "connections"
+  add_foreign_key "players", "game_sessions"
 end
