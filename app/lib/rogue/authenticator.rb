@@ -21,7 +21,7 @@ module Rogue
     attr_accessor :request
 
     def validate_jwt
-      self.user = User.from_jwt(jwt_data)
+      self.user = Rogue::UserClient.new.find(user_id)
     rescue StandardError => e
       self.error = e
     end
@@ -32,6 +32,10 @@ module Rogue
       raise ::UnauthorizedError, 'Invalid JWKS'
     rescue JWT::DecodeError
       raise ::UnauthorizedError, 'Invalid token'
+    end
+
+    def user_id
+      jwt_data[:sub]
     end
 
     def algorithms

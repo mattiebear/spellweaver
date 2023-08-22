@@ -13,6 +13,10 @@ class GameSession < ApplicationRecord
 
   scope :with_user, ->(user) { where(id: Player.select(:game_session_id).where(user_id: user.id)) }
 
+  def has_owner?(user)
+    owner.user_id == user.id
+  end
+
   def includes_user?(user)
     players.find_by(user_id: user.id).present?
   end

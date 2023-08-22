@@ -26,7 +26,7 @@ module Connections
     end
 
     def find_recipient
-      self.recipient = user_client.find_one(username:)
+      self.recipient = user_client.search_one(username:)
 
       if recipient.blank?
         raise NotFoundError.new.add('username', ErrorCode::NOT_FOUND,

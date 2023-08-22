@@ -15,6 +15,7 @@ class ApplicationController < ActionController::API
   rescue_from HttpError, with: :respond_with_http_error
 
   def respond_with_unknown_error(err)
+    # TODO: Remove error and use logging instead
     render json: { message: err.message }, status: :internal_server_error
   end
 

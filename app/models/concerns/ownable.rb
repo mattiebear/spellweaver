@@ -8,7 +8,7 @@ module Ownable
   end
 
   def user
-    @user ||= Rogue::User.new(id: user_id)
+    @user ||= Rogue::UserClient.new.find(user_id)
   end
 
   def load_user!

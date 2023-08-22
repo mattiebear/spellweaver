@@ -6,22 +6,6 @@ module Rogue
 
     def initialize(data = {})
       hydrate(data)
-
-      return if id.present? && image_url.present? && username.present?
-
-      load!
-    end
-
-    def load!
-      data = UserClient.new.find_one_raw(user_id: id)
-
-      hydrate(data)
-
-      self
-    end
-
-    def self.from_jwt(data = {})
-      new(id: data[:sub])
     end
 
     private
