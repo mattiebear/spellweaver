@@ -18,8 +18,4 @@ class GameSessionPolicy < ApplicationPolicy
   def update?
     record.has_owner?(user)
   end
-
-  def destroy?
-    record.has_owner?(user)
-  end
 end
