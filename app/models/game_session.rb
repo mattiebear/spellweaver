@@ -22,6 +22,6 @@ class GameSession < ApplicationRecord
   end
 
   def owner?(user)
-    owner.user_id == user.id
+    owner&.user_id == user.id
   end
 end
