@@ -2,9 +2,17 @@
 
 class GameSessionsController < ApplicationController
   def index
-    game_sessions = policy_scope(GameSession).where(filters)
+    game_sessions = policy_scope(GameSession).includes(:players).where(filters)
 
     render json: GameSessionBlueprint.render(game_sessions)
+  end
+
+  def show
+    game_session = policy_scope(GameSession).find(params[:id])
+
+    authorize game_session
+
+    render json: GameSessionBlueprint.render(game_session)
   end
 
   def create
