@@ -5,6 +5,15 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - name: Set up Ruby
@@ -13,5 +22,9 @@ jobs:
           ruby-version: 3.2.2
           bundler-cache: true
       - name: Run unit tests
+        env:
+          DATABASE_URL: postgresql://postgres@postgres:5432/spellweaver_test
+          RAILS_ENV: test
         run: |
+          bin/rails db:create db:schema:load
           bundle exec rspec
