@@ -59,8 +59,6 @@ module Connections
 
         connection.connection_users.reload
 
-        connection.connection_users.each(&:load_user!)
-
         self.result = connection
       end
     end

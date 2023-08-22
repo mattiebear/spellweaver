@@ -10,8 +10,4 @@ module Ownable
   def user
     @user ||= Rogue::UserClient.new.find(user_id)
   end
-
-  def load_user!
-    user.load!
-  end
 end

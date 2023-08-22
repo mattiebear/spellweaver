@@ -18,11 +18,9 @@ module GameSessions
 
     private
 
-    attr_accessor :game_session, :name, :user, :user_ids, :user_client
+    attr_accessor :name, :user, :user_ids, :user_client
 
     def validate_user_ids
-      debugger
-
       return if user_client.valid_user_ids?(user_ids)
 
       raise NotFoundError.new.add('user', ErrorCode::NOT_FOUND,
@@ -31,22 +29,25 @@ module GameSessions
 
     def create_game_session
       GameSession.transaction do
-        self.game_session = GameSession.create(status: 'pending')
+        game_session = GameSession.create(name:, status: 'pending')
 
         game_session.players.create(users)
         game_session.players.reload
-        game_session.players.each(&:load_user!)
 
         self.result = game_session
       end
     end
 
     def users
-      data = user_ids.map do |user_id|
+      data = filtered_ids.map do |user_id|
         { user_id:, role: 'participant' }
       end
 
       data << { user_id: user.id, role: 'owner' }
+    end
+
+    def filtered_ids
+      user_ids - [user.id]
     end
   end
 end
