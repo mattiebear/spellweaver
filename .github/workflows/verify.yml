@@ -35,7 +35,7 @@ jobs:
       - name: Lint files
         run: bundle exec rubocop
 
-      - name: Run tests
+      - name: Run unit tests
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:password@localhost:5432/spellweaver_test
