@@ -10,4 +10,8 @@ module Ownable
   def user
     @user ||= Rogue::UserClient.new.find(user_id)
   end
+
+  def user=(user)
+    @user = user
+  end
 end

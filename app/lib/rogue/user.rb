@@ -8,14 +8,22 @@ module Rogue
       hydrate(data)
     end
 
+    def valid?
+      attributes.all? { |attr| send(attr).present? }
+    end
+
     private
 
     def hydrate(data = {})
       data.symbolize_keys!
 
-      %i[id image_url username].each do |key|
+      attributes.each do |key|
         send("#{key}=", data[key]) if data.key?(key)
       end
+    end
+
+    def attributes
+      %i[id image_url username]
     end
   end
 end

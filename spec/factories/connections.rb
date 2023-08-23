@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :connection do
-    status { 1 }
+    status { 'accepted' }
   end
 end

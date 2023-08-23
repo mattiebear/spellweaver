@@ -50,3 +50,8 @@ group :development, :test do
   # Optimization
   gem 'bullet'
 end
+
+group :test do
+  # Coverage
+  gem 'simplecov', require: false
+end

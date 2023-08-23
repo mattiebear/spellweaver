@@ -3,27 +3,56 @@
 require 'rails_helper'
 
 RSpec.describe GameSessionPolicy, type: :policy do
-  subject { described_class }
-
-  let(:user) { User.new }
+  let(:user) { build(:user) }
 
   permissions '.scope' do
-    pending "add some examples to (or delete) #{__FILE__}"
-  end
+    it 'scopes to records on which the user is a participant' do
+      owner = create(:game_session, players: create_list(:player, 1, role: 'owner', user_id: user.id))
 
-  permissions :show? do
-    pending "add some examples to (or delete) #{__FILE__}"
+      participant = create(:game_session, players: create_list(:player, 1, role: 'participant', user_id: user.id))
+
+      create(:game_session, players: create_list(:player, 1))
+
+      records = described_class::Scope.new(user, GameSession).resolve
+
+      expect(records.pluck(:id)).to contain_exactly(owner.id, participant.id)
+    end
   end
 
   permissions :create? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it 'permits' do
+      expect(described_class).to permit(user, :create)
+    end
+  end
+
+  permissions :show? do
+    it 'permits if the user is a player' do
+      game_session = create(:game_session,
+                            players: create_list(:player, 1, role: 'participant', user_id: user.id))
+
+      expect(described_class).to permit(user, game_session)
+    end
   end
 
   permissions :update? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it 'permits if the user is an owner' do
+      game_session = create(:game_session,
+                            players: create_list(:player, 1, role: 'owner', user_id: user.id))
+
+      expect(described_class).to permit(user, game_session)
+    end
+
+    it 'denies if the user is a participant player' do
+      game_session = create(:game_session,
+                            players: create_list(:player, 1, role: 'participant', user_id: user.id))
+
+      expect(described_class).not_to permit(user, game_session)
+    end
   end
 
   permissions :destroy? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it 'denies' do
+      expect(described_class).not_to permit(user, :create)
+    end
   end
 end
