@@ -9,7 +9,9 @@ jobs:
       postgres:
         image: postgres:14-alpine
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
     steps:
@@ -22,6 +24,10 @@ jobs:
       - name: Run unit tests
         env:
           RAILS_ENV: test
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         run: |
           bin/rails db:create db:schema:load
           bundle exec rspec
