@@ -3,7 +3,7 @@
 class PlayerBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :role
+  fields :role, :user_id
 
   association :user, blueprint: UserBlueprint
 end
