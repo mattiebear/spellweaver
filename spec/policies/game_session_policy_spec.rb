@@ -34,7 +34,7 @@ RSpec.describe GameSessionPolicy, type: :policy do
     end
   end
 
-  permissions :update? do
+  permissions :update?, :destroy? do
     it 'permits if the user is an owner' do
       game_session = create(:game_session,
                             players: create_list(:player, 1, role: 'owner', user_id: user.id))
@@ -47,12 +47,6 @@ RSpec.describe GameSessionPolicy, type: :policy do
                             players: create_list(:player, 1, role: 'participant', user_id: user.id))
 
       expect(described_class).not_to permit(user, game_session)
-    end
-  end
-
-  permissions :destroy? do
-    it 'denies' do
-      expect(described_class).not_to permit(user, :create)
     end
   end
 end
