@@ -37,6 +37,14 @@ class GameSessionsController < ApplicationController
     render json: GameSessionBlueprint.render(game_session)
   end
 
+  def destroy
+    game_session = policy_scope(GameSession).find(params[:id])
+
+    authorize game_session
+
+    game_session.destroy!
+  end
+
   private
 
   def filters
