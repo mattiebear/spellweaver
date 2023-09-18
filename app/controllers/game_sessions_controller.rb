@@ -32,9 +32,12 @@ class GameSessionsController < ApplicationController
 
     authorize game_session
 
-    game_session.update!(game_session_params)
+    service = GameSessions::UpdateService.new(
+      game_session:,
+      params: game_session_params
+    ).run!
 
-    render json: GameSessionBlueprint.render(game_session)
+    render json: GameSessionBlueprint.render(service.result)
   end
 
   def destroy

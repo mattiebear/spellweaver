@@ -14,6 +14,7 @@ gem 'rack-cors'
 
 # Database and record management
 gem 'pg', '~> 1.1'
+gem 'redis'
 
 # Serialization
 gem 'blueprinter'
