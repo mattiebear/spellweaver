@@ -2,48 +2,73 @@
 
 module Story
   class Book
-    def initialize(map_id: nil, players: [], state: [])
-      self.map_id = map_id
-      self.players = players
-      self.state = state
+    attr_accessor :map, :players, :state
+
+    TRACKED_ATTRIBUTES = %i[map].freeze
+
+    def initialize(game_session)
+      self.id = get_id(game_session)
+      self.map = nil
+    end
+
+    def save!
+      TRACKED_ATTRIBUTES.each { |attr| save_field(attr) }
+    end
+
+    def load!
+      TRACKED_ATTRIBUTES.each { |attr| load_field(attr) }
     end
 
     def to_h
-      {
-        map_id:,
-        players:,
-        state:
-      }
+      data = {}
+
+      TRACKED_ATTRIBUTES.map do |attr|
+        data[attr] = send(attr)
+      end
+
+      data
     end
 
     def to_json(...)
       to_h.to_json(...)
     end
 
-    class << self
-      def load(data = {})
-        new(map_id: data[:map_id], players: data[:players], state: data[:state])
-      end
+    private
 
-      def from_session(game_session)
-        players = game_session.players.map { |player| story_player(player) }
+    attr_accessor :id
 
-        new(players:)
-      end
-
-      private
-
-      def story_player(player)
-        {
-          image: nil,
-          role: player.role,
-          user_id: player.user_id
-        }
+    def get_id(game_session)
+      case game_session
+      when GameSession
+        game_session.id
+      when String
+        game_session
+      else
+        raise StandardError.new, 'Invalid game session passed to story'
       end
     end
 
-    private
+    def store_key(field)
+      "story:#{id}:#{field}"
+    end
 
-    attr_accessor :map_id, :players, :state
+    def author
+      Persist::Client.instance
+    end
+
+    def save_field(attr)
+      data = send(attr)
+      data = data.to_json if data.is_a?(Hash)
+
+      author.set(store_key(attr), data)
+    end
+
+    def load_field
+      key = store_key(attr)
+
+      data = author.get(key)
+
+      send("#{attr}=".to_sym, data)
+    end
   end
 end
