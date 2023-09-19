@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module Rogue
-  require 'jwt'
-
   # Authenticates request checking for valid JWT
   class Authenticator
     attr_accessor :error, :user
@@ -21,29 +19,9 @@ module Rogue
     attr_accessor :request
 
     def validate_jwt
-      self.user = Rogue::UserClient.new.find(user_id)
+      self.user = Rogue::Lockpick.new(token).user
     rescue StandardError => e
       self.error = e
-    end
-
-    def jwt_data
-      JWT.decode(token, nil, true, algorithms:, jwks:).first.symbolize_keys
-    rescue JWT::JWKError
-      raise ::UnauthorizedError, 'Invalid JWKS'
-    rescue JWT::DecodeError
-      raise ::UnauthorizedError, 'Invalid token'
-    end
-
-    def user_id
-      jwt_data[:sub]
-    end
-
-    def algorithms
-      ['RS256']
-    end
-
-    def jwks
-      JwksClient.new.jwks
     end
 
     def token
