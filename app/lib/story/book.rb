@@ -29,10 +29,6 @@ module Story
       data
     end
 
-    def to_json(...)
-      to_h.to_json(...)
-    end
-
     private
 
     attr_accessor :id
