@@ -2,7 +2,7 @@
 
 module Story
   class Book
-    attr_accessor :map, :players, :state
+    attr_accessor :map
 
     TRACKED_ATTRIBUTES = %i[map].freeze
 
@@ -13,10 +13,12 @@ module Story
 
     def save!
       TRACKED_ATTRIBUTES.each { |attr| save_field(attr) }
+      self
     end
 
     def load!
       TRACKED_ATTRIBUTES.each { |attr| load_field(attr) }
+      self
     end
 
     def to_h
@@ -27,10 +29,6 @@ module Story
       end
 
       data
-    end
-
-    def to_json(...)
-      to_h.to_json(...)
     end
 
     private
@@ -63,7 +61,7 @@ module Story
       author.set(store_key(attr), data)
     end
 
-    def load_field
+    def load_field(attr)
       key = store_key(attr)
 
       data = author.get(key)
