@@ -3,17 +3,36 @@
 class StoryChannel < ApplicationCable::Channel
   after_subscribe :send_story_state
 
+  CURRENT_STATE = 'current-story-state'
+  SELECT_MAP = 'select-map'
+
   def subscribed
     stream_from story_key
     stream_from user_key
   end
 
+  def receive(data)
+    event = data['event']
+
+    case event
+    when SELECT_MAP
+      save_selected_map(data['data']['id'])
+    end
+  end
+
   private
 
-  def send_story_state
-    book = Story::Book.new(story_id)
+  def book
+    Story::Book.new(story_id).load!
+  end
 
-    ActionCable.server.broadcast(user_key, { event: 'current-story-state', data: book.to_h })
+  def send_story_state
+    ActionCable.server.broadcast(user_key, { event: CURRENT_STATE, data: book.to_h })
+  end
+
+  def save_selected_map(map_id)
+    book.map = map_id
+    book.save!
   end
 
   def story_id
