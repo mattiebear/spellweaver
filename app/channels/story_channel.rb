@@ -23,7 +23,7 @@ class StoryChannel < ApplicationCable::Channel
   private
 
   def book
-    Story::Book.new(story_id).load!
+    @book ||= Story::Book.new(story_id).load!
   end
 
   def send_story_state
