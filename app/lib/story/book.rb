@@ -2,11 +2,11 @@
 
 module Story
   class Book
-    TRACKED_ATTRIBUTES = %i[map].freeze
+    TRACKED_ATTRIBUTES = %i[map_id].freeze
 
     def initialize(game_session)
       self.id = get_id(game_session)
-      self.map = nil
+      self.map_id = nil
     end
 
     def save!
@@ -30,12 +30,12 @@ module Story
     end
 
     def select_map(id)
-      self.map = id
+      self.map_id = id
     end
 
     private
 
-    attr_accessor :id, :map
+    attr_accessor :id, :map_id
 
     def get_id(game_session)
       case game_session

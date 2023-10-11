@@ -3,6 +3,8 @@
 class StoryChannel < ApplicationCable::Channel
   after_subscribe :send_story_state
 
+  # TODO: Notate event data structure in some way
+  # TODO: Create store for send and received events
   CURRENT_STATE = 'current-story-state'
   SELECT_MAP = 'select-map'
   ADD_TOKEN = 'add-token'
@@ -18,6 +20,7 @@ class StoryChannel < ApplicationCable::Channel
     case message.event
     when SELECT_MAP
       save_selected_map(message)
+    end
   end
 
   private
@@ -33,7 +36,7 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def save_selected_map(message)
-    book.select_map(message.get(:id))
+    book.select_map(message.get(:map_id))
     book.save!
   end
 
