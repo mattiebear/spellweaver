@@ -2,8 +2,6 @@
 
 module Story
   class Book
-    attr_accessor :map
-
     TRACKED_ATTRIBUTES = %i[map].freeze
 
     def initialize(game_session)
@@ -31,9 +29,13 @@ module Story
       data
     end
 
+    def select_map(id)
+      self.map = id
+    end
+
     private
 
-    attr_accessor :id
+    attr_accessor :id, :map
 
     def get_id(game_session)
       case game_session
