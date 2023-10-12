@@ -9,7 +9,7 @@ RSpec.describe Story::Book do
     book = described_class.new(game_session)
 
     expect(book.to_h).to eq({
-                              map: nil
+                              map_id: nil
                             })
   end
 end
