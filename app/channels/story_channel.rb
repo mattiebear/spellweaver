@@ -15,11 +15,14 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def receive(data)
+    # TODO: Move actions to isolated class
     message = Story::Message.from(data)
 
     case message.event
     when SELECT_MAP
       save_selected_map(message)
+    when ADD_TOKEN
+      add_token(message)
     end
   end
 
@@ -37,6 +40,11 @@ class StoryChannel < ApplicationCable::Channel
 
   def save_selected_map(message)
     book.select_map(message.get(:map_id))
+    book.save!
+  end
+
+  def add_token(message)
+    book.add_token(message.get(:id), message.data)
     book.save!
   end
 
