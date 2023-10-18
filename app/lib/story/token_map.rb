@@ -33,13 +33,13 @@ module Story
       tokens.values.any? { |token| token.at?(position) }
     end
 
-		def add(data)
-			token = Token.new(data)
+    def add(data)
+      token = Token.new(data)
 
-			tokens.store(token.id, token)
+      tokens.store(token.id, token)
 
-			token
-		end
+      token
+    end
 
     private
 
