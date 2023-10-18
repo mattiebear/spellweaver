@@ -4,28 +4,28 @@ module Story
   class Book
     TRACKED_ATTRIBUTES = %i[map_id].freeze
 
-    # TODO: Optimize how data is stored. Should it be a single hash?
     def initialize(game_session)
       @id = get_id(game_session)
       @map_id = nil
-      @tokens = {}
+      @tokens = TokenMap.new(id)
     end
 
     def save!
-      # TODO: Only save changed data
-      save_tokens
+      tokens.save!
       TRACKED_ATTRIBUTES.each { |attr| save_field(attr) }
       self
     end
 
     def load!
-      load_tokens
+      tokens.load!
       TRACKED_ATTRIBUTES.each { |attr| load_field(attr) }
       self
     end
 
     def to_h
-      data = {}
+      data = {
+        tokens: tokens.to_h
+      }
 
       TRACKED_ATTRIBUTES.map do |attr|
         data[attr] = send(attr)
@@ -39,8 +39,9 @@ module Story
     end
 
     # TODO: Move to a #tokens class
-    def add_token(id, data)
-      tokens.store(id, data)
+    def add_token(_id, _data)
+      # # tokens.store(id, data)
+      # null if token_map.token_at?
     end
 
     private
@@ -62,14 +63,6 @@ module Story
       "story:#{id}:#{field}"
     end
 
-    def token_key(token_id)
-      "story:#{id}:token:#{token_id}"
-    end
-
-    def tokens_pattern
-      "story:#{id}:token:*"
-    end
-
     def author
       Persist::Client.instance
     end
@@ -81,28 +74,12 @@ module Story
       author.set(store_key(attr), data)
     end
 
-    def save_tokens
-      tokens.each do |id, data|
-        key = token_key(id)
-        author.hset(key, data)
-      end
-    end
-
     def load_field(attr)
       key = store_key(attr)
 
       data = author.get(key)
 
       send("#{attr}=".to_sym, data)
-    end
-
-    def load_tokens
-      keys = author.keys(tokens_pattern)
-
-      keys.each do |key|
-        data = author.hgetall(key).deep_symbolize_keys
-        tokens.store(data[:id], data)
-      end
     end
   end
 end
