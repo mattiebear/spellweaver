@@ -29,6 +29,18 @@ module Story
       tokens.map { |_, token| token.to_h }
     end
 
+    def token_at?(position)
+      tokens.values.any? { |token| token.at?(position) }
+    end
+
+    def add(data)
+      token = Token.new(data)
+
+      tokens.store(token.id, token)
+
+      token
+    end
+
     private
 
     def author

@@ -7,8 +7,8 @@ class StoryChannel < ApplicationCable::Channel
   # TODO: Create store for send and received events
   CURRENT_STATE = 'current-story-state'
   SELECT_MAP = 'select-map'
-  ADD_TOKEN = 'add-token'
   REQUEST_ADD_TOKEN = 'request-add-token'
+  ADD_TOKEN = 'add-token'
 
   def subscribed
     stream_from story_key
@@ -34,8 +34,6 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def send_story_state
-    Rails.logger.debug '***DEBUG*** send story state'
-
     message = Story::Message.new(CURRENT_STATE, book)
 
     ActionCable.server.broadcast(user_key, message.to_h)
@@ -47,12 +45,15 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def request_add_token(message)
-    token = book.add_token(message.get(:id), message.data)
+    token = book.add_token(message.data)
 
     return unless token
 
     book.save!
-    # ActionCable.server.broadcast(story_key, message.to_h)
+
+    message = Story::Message.new(ADD_TOKEN, token)
+
+    ActionCable.server.broadcast(story_key, message.to_h)
   end
 
   def story_id
