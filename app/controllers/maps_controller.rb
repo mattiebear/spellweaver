@@ -8,7 +8,8 @@ class MapsController < ApplicationController
   end
 
   def show
-    map = policy_scope(Map).find(params[:id])
+    # TODO: Update map policy scope
+    map = Map.find(params[:id])
 
     authorize map
 
