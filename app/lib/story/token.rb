@@ -6,7 +6,8 @@ module Story
   class Token
     TRACKED_ATTRIBUTES = %i[id user_id token_id x y z].freeze
 
-    attr_accessor :id, :user_id, :token_id, :x, :y, :z
+    attr_accessor :id, :user_id, :token_id
+    attr_reader :x, :y, :z
 
     def initialize(data = {})
       data.symbolize_keys!
@@ -30,16 +31,30 @@ module Story
       data
     end
 
-    def generate_id
-      self.id = SecureRandom.uuid
-    end
-
     def position
       Position.new(x, y, z)
     end
 
     def at?(position)
       self.position.equals?(position)
+    end
+
+    private
+
+    def generate_id
+      self.id = SecureRandom.uuid
+    end
+
+    def x=(value)
+      @x = value.to_i
+    end
+
+    def y=(value)
+      @y = value.to_i
+    end
+
+    def z=(value)
+      @z = value.to_i
     end
   end
 end
