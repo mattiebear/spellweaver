@@ -38,10 +38,12 @@ module Story
       self.map_id = id
     end
 
-    # TODO: Move to a #tokens class
-    def add_token(_id, _data)
-      # # tokens.store(id, data)
-      # null if token_map.token_at?
+    def add_token(data)
+      position = Position.parse(data)
+
+      nil if tokens.token_at?(position)
+
+      tokens.add(data)
     end
 
     private

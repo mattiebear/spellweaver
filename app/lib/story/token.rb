@@ -33,5 +33,13 @@ module Story
     def generate_id
       self.id = SecureRandom.uuid
     end
+
+    def position
+      Position.new(x, y, z)
+    end
+
+    def at?(position)
+      self.position.equals?(position)
+    end
   end
 end
