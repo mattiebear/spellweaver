@@ -8,6 +8,7 @@ class StoryChannel < ApplicationCable::Channel
   CURRENT_STATE = 'current-story-state'
   SELECT_MAP = 'select-map'
   ADD_TOKEN = 'add-token'
+  REQUEST_ADD_TOKEN = 'request-add-token'
 
   def subscribed
     stream_from story_key
@@ -21,8 +22,8 @@ class StoryChannel < ApplicationCable::Channel
     case message.event
     when SELECT_MAP
       save_selected_map(message)
-    when ADD_TOKEN
-      add_token(message)
+    when REQUEST_ADD_TOKEN
+      request_add_token(message)
     end
   end
 
@@ -33,6 +34,8 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def send_story_state
+    Rails.logger.debug '***DEBUG*** send story state'
+
     message = Story::Message.new(CURRENT_STATE, book)
 
     ActionCable.server.broadcast(user_key, message.to_h)
@@ -43,9 +46,13 @@ class StoryChannel < ApplicationCable::Channel
     book.save!
   end
 
-  def add_token(message)
-    book.add_token(message.get(:id), message.data)
+  def request_add_token(message)
+    token = book.add_token(message.get(:id), message.data)
+
+    return unless token
+
     book.save!
+    # ActionCable.server.broadcast(story_key, message.to_h)
   end
 
   def story_id
