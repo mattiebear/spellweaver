@@ -9,6 +9,10 @@ AllCops:
 Metrics/BlockLength:
   Enabled: false
 
+Metrics/MethodLength:
+  Exclude:
+    - db/migrate/*
+
 Naming/MethodParameterName:
   Enabled: false
 
