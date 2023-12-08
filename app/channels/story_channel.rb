@@ -9,6 +9,8 @@ class StoryChannel < ApplicationCable::Channel
   SELECT_MAP = 'select-map'
   REQUEST_ADD_TOKEN = 'request-add-token'
   ADD_TOKEN = 'add-token'
+  REQUEST_REMOVE_TOKEN = 'request-remove-token'
+  REMOVE_TOKEN = 'remove-token'
 
   def subscribed
     stream_from story_key
@@ -24,6 +26,8 @@ class StoryChannel < ApplicationCable::Channel
       save_selected_map(message)
     when REQUEST_ADD_TOKEN
       request_add_token(message)
+    when REQUEST_REMOVE_TOKEN
+      request_remove_token(message)
     end
   end
 
@@ -52,6 +56,14 @@ class StoryChannel < ApplicationCable::Channel
     book.save!
 
     message = Story::Message.new(ADD_TOKEN, token)
+
+    ActionCable.server.broadcast(story_key, message.to_h)
+  end
+
+  def request_remove_token(message)
+    book.remove_token(message.data[:token_id])
+
+    message = Story::Message.new(REMOVE_TOKEN, message.data)
 
     ActionCable.server.broadcast(story_key, message.to_h)
   end

@@ -46,6 +46,10 @@ module Story
       tokens.add(data)
     end
 
+    def remove_token(token_id)
+      tokens.remove(token_id)
+    end
+
     private
 
     attr_accessor :id, :map_id, :tokens

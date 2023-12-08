@@ -41,6 +41,11 @@ module Story
       token
     end
 
+    def remove(token_id)
+      tokens.delete(token_id)
+      author.del(token_key(token_id))
+    end
+
     private
 
     def author
