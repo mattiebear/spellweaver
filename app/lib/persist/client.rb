@@ -6,7 +6,7 @@ module Persist
   class Client
     include Singleton
 
-    delegate :get, :hgetall, :hset, :keys, :set, to: :redis
+    delegate :del, :get, :hgetall, :hset, :keys, :set, to: :redis
 
     def initialize
       self.redis = Redis.new
