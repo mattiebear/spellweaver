@@ -39,6 +39,12 @@ module Story
       self.position.equals?(position)
     end
 
+    def move_to(position)
+      self.x = position.x
+      self.y = position.y
+      self.z = position.z
+    end
+
     private
 
     def generate_id

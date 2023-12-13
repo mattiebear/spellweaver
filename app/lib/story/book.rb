@@ -41,13 +41,22 @@ module Story
     def add_token(data)
       position = Position.parse(data)
 
-      nil if tokens.token_at?(position)
+      return nil if tokens.token_at?(position)
 
       tokens.add(data)
     end
 
+    # TODO: Validate that the user owns the token
     def remove_token(token_id)
       tokens.remove(token_id)
+    end
+
+    def move_token(data)
+      new_position = Position.parse(data)
+
+      return nil if tokens.token_at?(new_position) || !tokens.with_id?(data[:token_id])
+
+      tokens.move(data[:token_id], new_position)
     end
 
     private
