@@ -11,12 +11,15 @@ class StoryChannel < ApplicationCable::Channel
   ADD_TOKEN = 'add-token'
   REQUEST_REMOVE_TOKEN = 'request-remove-token'
   REMOVE_TOKEN = 'remove-token'
+  REQUEST_MOVE_TOKEN = 'request-move-token'
+  MOVE_TOKEN = 'move-token'
 
   def subscribed
     stream_from story_key
     stream_from user_key
   end
 
+  # FIXME: This is a mess
   def receive(data)
     # TODO: Move actions to isolated class
     message = Story::Message.from(data)
@@ -28,6 +31,8 @@ class StoryChannel < ApplicationCable::Channel
       request_add_token(message)
     when REQUEST_REMOVE_TOKEN
       request_remove_token(message)
+    when REQUEST_MOVE_TOKEN
+      request_move_token(message)
     end
   end
 
@@ -63,9 +68,17 @@ class StoryChannel < ApplicationCable::Channel
   def request_remove_token(message)
     book.remove_token(message.data[:token_id])
 
-    message = Story::Message.new(REMOVE_TOKEN, message.data)
+    reply = Story::Message.new(REMOVE_TOKEN, message.data)
 
-    ActionCable.server.broadcast(story_key, message.to_h)
+    ActionCable.server.broadcast(story_key, reply.to_h)
+  end
+
+  def request_move_token(message)
+    book.move_token(message.data)
+
+    reply = Story::Message.new(MOVE_TOKEN, message.data)
+
+    ActionCable.server.broadcast(story_key, reply.to_h)
   end
 
   def story_id

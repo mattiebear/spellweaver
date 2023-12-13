@@ -33,6 +33,10 @@ module Story
       tokens.values.any? { |token| token.at?(position) }
     end
 
+    def with_id?(token_id)
+      tokens.key?(token_id)
+    end
+
     def add(data)
       token = Token.new(data)
 
@@ -44,6 +48,15 @@ module Story
     def remove(token_id)
       tokens.delete(token_id)
       author.del(token_key(token_id))
+    end
+
+    def move(token_id, position)
+      token = tokens[token_id]
+      token.move_to(position)
+
+      author.hset(token_key(token_id), token.to_h)
+
+      token
     end
 
     private
