@@ -24,4 +24,8 @@ class GameSession < ApplicationRecord
   def owner?(user)
     owner&.user_id == user.id
   end
+
+  def player?(user)
+    includes_user?(user) && !owner?(user)
+  end
 end

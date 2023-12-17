@@ -4,10 +4,11 @@ module Story
   class Book
     TRACKED_ATTRIBUTES = %i[map_id].freeze
 
-    def initialize(game_session)
-      @id = get_id(game_session)
+    def initialize(game_session, user)
+      @game_session = game_session
       @map_id = nil
       @tokens = TokenMap.new(id)
+      @user = user
     end
 
     def save!
@@ -38,40 +39,36 @@ module Story
       self.map_id = id
     end
 
-    def add_token(data, user)
+    def add_token(data)
       position = Position.new(*data[:pos])
 
       return nil if tokens.token_at?(position)
+      return nil if game_session.player?(user) && tokens.with_user?(user.id)
 
       tokens.add(data, user)
     end
 
-    # TODO: Validate that the user owns the token
     def remove_token(token_id)
+      return false unless tokens.with_id?(token_id)
+      return false unless tokens.get(token_id).user_id == user.id
+
       tokens.remove(token_id)
     end
 
     def move_token(data)
       new_position = Position.new(*data[:pos])
 
-      return nil if tokens.token_at?(new_position) || !tokens.with_id?(data[:token_id])
+      return nil if tokens.token_at?(new_position) || !tokens.with_id?(data[:token_id]) || tokens.get(data[:token_id]).user_id != user.id
 
       tokens.move(data[:token_id], new_position)
     end
 
     private
 
-    attr_accessor :id, :map_id, :tokens
+    attr_accessor :game_session, :map_id, :tokens, :user
 
-    def get_id(game_session)
-      case game_session
-      when GameSession
-        game_session.id
-      when String
-        game_session
-      else
-        raise StandardError.new, 'Invalid game session passed to story'
-      end
+    def id
+      game_session.id
     end
 
     def store_key(field)

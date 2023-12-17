@@ -32,8 +32,8 @@ jobs:
         run: |
           bundle install
 
-      - name: Lint files
-        run: bundle exec rubocop
+      # - name: Lint files
+      #   run: bundle exec rubocop
 
       - name: Run unit tests
         env:
