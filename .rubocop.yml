@@ -12,6 +12,7 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Exclude:
     - db/migrate/*
+    - app/channels/story_channel.rb
 
 Naming/MethodParameterName:
   Enabled: false
