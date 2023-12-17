@@ -10,6 +10,10 @@ module Story
       @z = z
     end
 
+    def to_a
+      [x, y, z]
+    end
+
     def to_h
       { x:, y:, z: }
     end
