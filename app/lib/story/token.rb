@@ -6,7 +6,7 @@ module Story
   class Token
     attr_accessor :id, :user_id, :token_id, :position
 
-    def initialize(user_id:, token_id:, position:, id: '')
+    def initialize(user_id:, token_id:, position:, id: nil)
       @id = id
       @user_id = user_id
       @token_id = token_id
