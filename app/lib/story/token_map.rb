@@ -32,8 +32,16 @@ module Story
       tokens.values.any? { |token| token.at?(position) }
     end
 
+    def get(token_id)
+      tokens[token_id]
+    end
+
     def with_id?(token_id)
       tokens.key?(token_id)
+    end
+
+    def with_user?(user)
+      tokens.values.any? { |token| token.user_id == user.id }
     end
 
     def add(data, user)

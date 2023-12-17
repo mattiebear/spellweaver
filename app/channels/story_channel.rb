@@ -38,8 +38,12 @@ class StoryChannel < ApplicationCable::Channel
 
   private
 
+  def game_session
+    @game_session ||= GameSession.find_by(id: story_id)
+  end
+
   def book
-    @book ||= Story::Book.new(story_id).load!
+    @book ||= Story::Book.new(game_session, current_user).load!
   end
 
   def send_story_state
@@ -54,7 +58,7 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def request_add_token(message)
-    token = book.add_token(message.data, current_user)
+    token = book.add_token(message.data)
 
     return unless token
 
@@ -64,7 +68,7 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def request_remove_token(message)
-    book.remove_token(message.data[:token_id])
+    return unless book.remove_token(message.data[:token_id])
 
     reply = Story::Message.new(REMOVE_TOKEN, message.data)
 
@@ -72,7 +76,7 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def request_move_token(message)
-    book.move_token(message.data)
+    return unless book.move_token(message.data)
 
     reply = Story::Message.new(MOVE_TOKEN, message.data)
 
