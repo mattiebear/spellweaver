@@ -4,35 +4,33 @@ require 'securerandom'
 
 module Story
   class Token
-    TRACKED_ATTRIBUTES = %i[id user_id token_id x y z].freeze
+    attr_accessor :id, :user_id, :token_id, :position
 
-    attr_accessor :id, :user_id, :token_id
-    attr_reader :x, :y, :z
-
-    def initialize(data = {})
-      data.symbolize_keys!
-
-      TRACKED_ATTRIBUTES.each do |attr|
-        value = data[attr]
-
-        send("#{attr}=".to_sym, value)
-      end
+    def initialize(user_id:, token_id:, position:, id: '')
+      @id = id
+      @user_id = user_id
+      @token_id = token_id
+      @position = position
 
       generate_id if id.blank?
     end
 
-    def to_h
-      data = {}
-
-      TRACKED_ATTRIBUTES.map do |attr|
-        data[attr] = send(attr)
-      end
-
-      data
+    def data
+      {
+        id:,
+        user_id:,
+        token_id:,
+        **position.to_h
+      }
     end
 
-    def position
-      Position.new(x, y, z)
+    def to_h
+      {
+        id:,
+        user_id:,
+        token_id:,
+        pos: position.to_a
+      }
     end
 
     def at?(position)
@@ -40,27 +38,23 @@ module Story
     end
 
     def move_to(position)
-      self.x = position.x
-      self.y = position.y
-      self.z = position.z
+      self.position = position
+    end
+
+    class << self
+      def load(data)
+        sym_data = data.symbolize_keys
+
+        position = Position.new(sym_data[:x].to_i, sym_data[:y].to_i, sym_data[:z].to_i)
+
+        new(user_id: sym_data[:user_id], token_id: sym_data[:token_id], position:, id: sym_data[:id])
+      end
     end
 
     private
 
     def generate_id
       self.id = SecureRandom.uuid
-    end
-
-    def x=(value)
-      @x = value.to_i
-    end
-
-    def y=(value)
-      @y = value.to_i
-    end
-
-    def z=(value)
-      @z = value.to_i
     end
   end
 end

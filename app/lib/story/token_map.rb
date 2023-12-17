@@ -14,14 +14,13 @@ module Story
 
       keys.each do |key|
         data = author.hgetall(key).deep_symbolize_keys
-        tokens.store(data[:id], Token.new(data))
+        tokens.store(data[:id], Token.load(data))
       end
     end
 
     def save!
       tokens.each do |id, token|
-        key = token_key(id)
-        author.hset(key, token.to_h)
+        author.hset(token_key(id), token.to_h)
       end
     end
 
@@ -38,7 +37,9 @@ module Story
     end
 
     def add(data)
-      token = Token.new(data)
+      position = Position.parse(data[:pos])
+
+      token = Token.new(user_id: data[:user_id], token_id: data[:token_id], position:)
 
       tokens.store(token.id, token)
 

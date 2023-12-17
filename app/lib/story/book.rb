@@ -39,7 +39,7 @@ module Story
     end
 
     def add_token(data)
-      position = Position.parse(data)
+      position = Position.parse(data[:pos])
 
       return nil if tokens.token_at?(position)
 
@@ -52,7 +52,7 @@ module Story
     end
 
     def move_token(data)
-      new_position = Position.parse(data)
+      new_position = Position.new(*data[:pos])
 
       return nil if tokens.token_at?(new_position) || !tokens.with_id?(data[:token_id])
 
