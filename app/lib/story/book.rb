@@ -38,12 +38,12 @@ module Story
       self.map_id = id
     end
 
-    def add_token(data)
-      position = Position.parse(data[:pos])
+    def add_token(data, user)
+      position = Position.new(*data[:pos])
 
       return nil if tokens.token_at?(position)
 
-      tokens.add(data)
+      tokens.add(data, user)
     end
 
     # TODO: Validate that the user owns the token

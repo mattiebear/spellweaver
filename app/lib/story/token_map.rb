@@ -36,10 +36,10 @@ module Story
       tokens.key?(token_id)
     end
 
-    def add(data)
-      position = Position.parse(data[:pos])
+    def add(data, user)
+      position = Position.new(*data[:pos])
 
-      token = Token.new(user_id: data[:user_id], token_id: data[:token_id], position:)
+      token = Token.new(user_id: user.id, token_id: data[:token_id], position:)
 
       tokens.store(token.id, token)
 

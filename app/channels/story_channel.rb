@@ -54,7 +54,7 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def request_add_token(message)
-    token = book.add_token(message.data)
+    token = book.add_token(message.data, current_user)
 
     return unless token
 
