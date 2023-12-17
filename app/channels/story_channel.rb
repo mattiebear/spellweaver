@@ -58,8 +58,6 @@ class StoryChannel < ApplicationCable::Channel
 
     return unless token
 
-    book.save!
-
     message = Story::Message.new(ADD_TOKEN, token)
 
     ActionCable.server.broadcast(story_key, message.to_h)

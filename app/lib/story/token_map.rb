@@ -20,7 +20,7 @@ module Story
 
     def save!
       tokens.each do |id, token|
-        author.hset(token_key(id), token.to_h)
+        author.hset(token_key(id), token.data)
       end
     end
 
@@ -42,6 +42,7 @@ module Story
       token = Token.new(user_id: user.id, token_id: data[:token_id], position:)
 
       tokens.store(token.id, token)
+      author.hset(token_key(token.id), token.data)
 
       token
     end
@@ -55,7 +56,7 @@ module Story
       token = tokens[token_id]
       token.move_to(position)
 
-      author.hset(token_key(token_id), token.to_h)
+      author.hset(token_key(token_id), token.data)
 
       token
     end
