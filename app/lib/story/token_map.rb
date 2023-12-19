@@ -69,6 +69,10 @@ module Story
       token
     end
 
+    def clear!
+      tokens.each_key { |id| remove(id) }
+    end
+
     private
 
     def author

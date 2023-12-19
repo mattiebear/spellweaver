@@ -13,6 +13,8 @@ class StoryChannel < ApplicationCable::Channel
   REMOVE_TOKEN = 'remove-token'
   REQUEST_MOVE_TOKEN = 'request-move-token'
   MOVE_TOKEN = 'move-token'
+  REQUEST_CHANGE_MAP = 'request-change-map'
+  CHANGE_MAP = 'change-map'
 
   def subscribed
     stream_from story_key
@@ -33,6 +35,8 @@ class StoryChannel < ApplicationCable::Channel
       request_remove_token(message)
     when REQUEST_MOVE_TOKEN
       request_move_token(message)
+    when REQUEST_CHANGE_MAP
+      request_change_map(message)
     end
   end
 
@@ -43,7 +47,7 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def book
-    @book ||= Story::Book.new(game_session, current_user).load!
+    Story::Book.new(game_session, current_user).load!
   end
 
   def send_story_state
@@ -54,7 +58,6 @@ class StoryChannel < ApplicationCable::Channel
 
   def save_selected_map(message)
     book.select_map(message.get(:map_id))
-    book.save!
   end
 
   def request_add_token(message)
@@ -79,6 +82,14 @@ class StoryChannel < ApplicationCable::Channel
     return unless book.move_token(message.data)
 
     reply = Story::Message.new(MOVE_TOKEN, message.data)
+
+    ActionCable.server.broadcast(story_key, reply.to_h)
+  end
+
+  def request_change_map(message)
+    book.change_map(message.data[:map_id])
+
+    reply = Story::Message.new(CHANGE_MAP, message.data)
 
     ActionCable.server.broadcast(story_key, reply.to_h)
   end
