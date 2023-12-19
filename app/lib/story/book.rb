@@ -37,13 +37,20 @@ module Story
 
     def select_map(id)
       self.map_id = id
+      save!
+    end
+
+    def change_map(id)
+      select_map(id)
+      tokens.clear!
+      save!
     end
 
     def add_token(data)
       position = Position.new(*data[:pos])
 
       return nil if tokens.token_at?(position)
-      return nil if game_session.player?(user) && tokens.with_user?(user.id)
+      return nil if game_session.player?(user) && tokens.with_user?(user)
 
       tokens.add(data, user)
     end
