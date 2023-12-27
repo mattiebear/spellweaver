@@ -12,6 +12,7 @@ module GameSessions
     def tasks
       validate_status
       initialize_live_session
+      destroy_live_session
       update_session_params
     end
 
@@ -27,6 +28,12 @@ module GameSessions
       return unless initialize?
 
       GameSessions::InitializeService.new(game_session:).run!
+    end
+
+    def destroy_live_session
+      return unless destroy?
+
+      GameSessions::DestroyService.new(game_session:).run!
     end
 
     def update_session_params
@@ -49,6 +56,10 @@ module GameSessions
 
     def initialize?
       status == 'active'
+    end
+
+    def destroy?
+      status == 'complete'
     end
   end
 end
