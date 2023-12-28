@@ -4,7 +4,7 @@ module Story
   class Book
     TRACKED_ATTRIBUTES = %i[map_id].freeze
 
-    def initialize(game_session, user)
+    def initialize(game_session, user = nil)
       @game_session = game_session
       @map_id = nil
       @tokens = TokenMap.new(id)
@@ -65,9 +65,16 @@ module Story
     def move_token(data)
       new_position = Position.new(*data[:pos])
 
-      return nil if tokens.token_at?(new_position) || !tokens.with_id?(data[:token_id]) || tokens.get(data[:token_id]).user_id != user.id
+      if tokens.token_at?(new_position) || !tokens.with_id?(data[:token_id]) || tokens.get(data[:token_id]).user_id != user.id
+        return nil
+      end
 
       tokens.move(data[:token_id], new_position)
+    end
+
+    def destroy!
+      tokens.clear!
+      TRACKED_ATTRIBUTES.each { |attr| author.del(store_key(attr)) }
     end
 
     private

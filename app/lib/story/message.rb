@@ -4,7 +4,7 @@ module Story
   class Message
     attr_reader :event, :data
 
-    def initialize(event, data)
+    def initialize(event, data = {})
       @event = event
       @data = data
     end
