@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Game
+  # The game board providing controls to add, move and remove tokens
   class Map
     include Dry::Monads[:result]
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Game
+  # A 3-dimensional position on the game board
   class Position
     attr_accessor :x, :y, :z
 

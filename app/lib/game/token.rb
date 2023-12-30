@@ -3,6 +3,7 @@
 require 'securerandom'
 
 module Game
+  # Represents a single dynamic token on the game board
   class Token
     attr_accessor :id, :pos, :token_id, :user_id
 
