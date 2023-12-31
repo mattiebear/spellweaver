@@ -2,7 +2,7 @@
 
 module Game
   module Messaging
-		# Converts a data object into a message
+    # Converts a data object into a message
     class MessageLoader
       def initialize(source = {})
         @source = source
@@ -14,11 +14,11 @@ module Game
 
       private
 
-			attr_reader :source
+      attr_reader :source
 
       def compose_message(source)
-				data = source[:data] || {}
-				event = source[:event] || :unknown_event
+        data = source[:data] || {}
+        event = source[:event] || :unknown_event
 
         Message.new(event:, data:)
       end

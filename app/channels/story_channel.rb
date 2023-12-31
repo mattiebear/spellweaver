@@ -23,21 +23,27 @@ class StoryChannel < ApplicationCable::Channel
 
   # FIXME: This is a mess
   def receive(data)
-    # TODO: Move actions to isolated class
-    message = Story::Message.from(data)
+    message = Game::Messaging::MessageLoader.new(data).message
+    action = Game::Director.new(message).action
 
-    case message.event
-    when SELECT_MAP
-      save_selected_map(message)
-    when REQUEST_ADD_TOKEN
-      request_add_token(message)
-    when REQUEST_REMOVE_TOKEN
-      request_remove_token(message)
-    when REQUEST_MOVE_TOKEN
-      request_move_token(message)
-    when REQUEST_CHANGE_MAP
-      request_change_map(message)
-    end
+    action.execute!
+
+
+    # # TODO: Move actions to isolated class
+    # message = Story::Message.from(data)
+
+    # case message.event
+    # when SELECT_MAP
+    #   save_selected_map(message)
+    # when REQUEST_ADD_TOKEN
+    #   request_add_token(message)
+    # when REQUEST_REMOVE_TOKEN
+    #   request_remove_token(message)
+    # when REQUEST_MOVE_TOKEN
+    #   request_move_token(message)
+    # when REQUEST_CHANGE_MAP
+    #   request_change_map(message)
+    # end
   end
 
   private
