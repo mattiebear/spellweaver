@@ -23,10 +23,17 @@ class StoryChannel < ApplicationCable::Channel
 
   # FIXME: This is a mess
   def receive(data)
-    message = Game::Messaging::MessageLoader.new(data).message
-    action = Game::Director.new(message).action
+    Game::Messaging::MessageLoader.new(data).message.bind do |message|
+      Game::Director.new(message).action.bind do |action|
+        action.execute!
+      end
+    end
 
-    action.execute!
+
+
+    # action = Game::Director.new(message).action
+
+    # action.execute!
 
 
     # # TODO: Move actions to isolated class

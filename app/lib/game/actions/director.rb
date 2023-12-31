@@ -5,6 +5,7 @@ module Game
     # Distributes message data to the appropriate handler
     class Director
       include Actionable
+      include Dry::Monads[:maybe]
 
       register_action :select_map, SelectMap
 
@@ -15,7 +16,11 @@ module Game
       def action
         klass = fetch_action(message.event)
 
-        klass.new(message.data)
+        if klass.nil?
+          None()
+        else
+          Some(klass.new(message.data))
+        end
       end
 
       private

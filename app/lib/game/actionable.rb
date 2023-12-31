@@ -5,7 +5,7 @@ module Game
     extend ActiveSupport::Concern
 
     included do
-      private 
+      private
 
       def fetch_action(key)
         self.class.actors[key]
