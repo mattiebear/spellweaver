@@ -8,7 +8,8 @@ module Game
         puts 'Selecting map for game...'
         puts data
 
-        Success(data)
+        # TODO: Change this, obviously
+        Success(ActionResult.new(event: :map_selected, data: data))
 			end
     end
   end

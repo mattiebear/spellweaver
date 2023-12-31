@@ -4,7 +4,9 @@ module Game
   module Actions
     # Base class for all executable actions
     class Action
-      def initialize(data)
+      include Dry::Monads[:result]
+
+      def initialize(data = nil)
         self.data = data
       end
 

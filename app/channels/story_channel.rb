@@ -24,17 +24,14 @@ class StoryChannel < ApplicationCable::Channel
   # FIXME: This is a mess
   def receive(data)
     Game::Messaging::MessageLoader.new(data).message.bind do |message|
-      Game::Director.new(message).action.bind do |action|
-        action.execute!
+      Game::Director.new(message).action.bind(&:execute!).bind do |result|
+        broadcast(result)
       end
     end
-
-
 
     # action = Game::Director.new(message).action
 
     # action.execute!
-
 
     # # TODO: Move actions to isolated class
     # message = Story::Message.from(data)
@@ -55,64 +52,77 @@ class StoryChannel < ApplicationCable::Channel
 
   private
 
-  def game_session
-    @game_session ||= GameSession.find_by(id: story_id)
-  end
-
-  def book
-    Story::Book.new(game_session, current_user).load!
-  end
-
   def send_story_state
-    message = Story::Message.new(CURRENT_STATE, book)
-
-    ActionCable.server.broadcast(user_key, message.to_h)
+    Game::Actions::StoryState.new(id: game_session_id).execute!.bind do |result|
+      broadcast(result)
+    end
   end
 
-  def save_selected_map(message)
-    book.select_map(message.get(:map_id))
+  def broadcast(result)
+    Game::Messaging::Broadcast.new(data: result.data,
+                                   event: result.event,
+                                   game_session_id:,
+                                   user: current_user).send!
   end
 
-  def request_add_token(message)
-    token = book.add_token(message.data)
+  # def game_session
+  #   @game_session ||= GameSession.find_by(id: story_id)
+  # end
 
-    return unless token
+  # def book
+  #   Story::Book.new(game_session, current_user).load!
+  # end
 
-    message = Story::Message.new(ADD_TOKEN, token)
+  # def send_story_state
+  #   message = Story::Message.new(CURRENT_STATE, book)
 
-    ActionCable.server.broadcast(story_key, message.to_h)
-  end
+  #   ActionCable.server.broadcast(user_key, message.to_h)
+  # end
 
-  def request_remove_token(message)
-    return unless book.remove_token(message.data[:token_id])
+  # def save_selected_map(message)
+  #   book.select_map(message.get(:map_id))
+  # end
 
-    reply = Story::Message.new(REMOVE_TOKEN, message.data)
+  # def request_add_token(message)
+  #   token = book.add_token(message.data)
 
-    ActionCable.server.broadcast(story_key, reply.to_h)
-  end
+  #   return unless token
 
-  def request_move_token(message)
-    return unless book.move_token(message.data)
+  #   message = Story::Message.new(ADD_TOKEN, token)
 
-    reply = Story::Message.new(MOVE_TOKEN, message.data)
+  #   ActionCable.server.broadcast(story_key, message.to_h)
+  # end
 
-    ActionCable.server.broadcast(story_key, reply.to_h)
-  end
+  # def request_remove_token(message)
+  #   return unless book.remove_token(message.data[:token_id])
 
-  def request_change_map(message)
-    book.change_map(message.data[:map_id])
+  #   reply = Story::Message.new(REMOVE_TOKEN, message.data)
 
-    reply = Story::Message.new(CHANGE_MAP, message.data)
+  #   ActionCable.server.broadcast(story_key, reply.to_h)
+  # end
 
-    ActionCable.server.broadcast(story_key, reply.to_h)
-  end
+  # def request_move_token(message)
+  #   return unless book.move_token(message.data)
 
-  def story_id
+  #   reply = Story::Message.new(MOVE_TOKEN, message.data)
+
+  #   ActionCable.server.broadcast(story_key, reply.to_h)
+  # end
+
+  # def request_change_map(message)
+  #   book.change_map(message.data[:map_id])
+
+  #   reply = Story::Message.new(CHANGE_MAP, message.data)
+
+  #   ActionCable.server.broadcast(story_key, reply.to_h)
+  # end
+
+  def game_session_id
     params[:story]
   end
 
   def story_key
-    "story:#{story_id}"
+    "story:#{game_session_id}"
   end
 
   def user_id
