@@ -15,13 +15,13 @@ module Game
       def to_h
         {
           map_id:,
-          tokens: map.all(&:to_h)
+          tokens: map.to_a
         }
       end
+
+      private
+
+      attr_accessor :id, :map, :map_id
     end
-
-    private
-
-    attr_accessor :id, :map, :map_id
   end
 end
