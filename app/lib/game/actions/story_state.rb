@@ -5,8 +5,8 @@ module Game
     # Sends full state of the story
     class StoryState < Action
       def execute!
-        State::Loader.new(game_session_id).load!.bind do |state|
-          Success(ActionResult.new(event: :current_story_state, data: state.to_h))
+        load_state.bind do |state|
+          success(:current_story_state, state.to_h)
         end
       end
     end

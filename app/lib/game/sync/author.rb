@@ -50,6 +50,12 @@ module Game
         client.del(full_key(key))
       end
 
+      def apply(state)
+        apply_change(state.changes.shift) while state.changes.any?
+
+        Success(state)
+      end
+
       private
 
       attr_reader :prefix
@@ -76,6 +82,15 @@ module Game
           prefix.join(':')
         else
           ''
+        end
+      end
+
+      def apply_change(changeset)
+        case changeset.type
+        when :set
+          save(changeset.key, changeset.value)
+        when :delete
+          remove(changeset.key)
         end
       end
     end

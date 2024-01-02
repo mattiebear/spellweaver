@@ -3,7 +3,7 @@
 class StoryChannel < ApplicationCable::Channel
   after_subscribe :send_story_state
 
-  CURRENT_STATE = 'current-story-state'
+  # CURRENT_STATE = 'current-story-state'
   SELECT_MAP = 'select-map'
   REQUEST_ADD_TOKEN = 'request-add-token'
   ADD_TOKEN = 'add-token'
@@ -20,10 +20,15 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    Game::Messaging::MessageLoader.new(data).message.bind do |message|
-      Game::Director.new(game_session_id:, message:, user:).action.bind(&:execute!).bind do |result|
-        broadcast(result)
-      end
+    result = Game::Messaging::MessageLoader.new(data).message.bind do |message|
+      Game::Actions::Director.new(game_session_id:, message:, user:).action.bind(&:execute!)
+    end
+
+    if result.success?
+      broadcast(result.value!)
+    else
+      puts 'result is'
+      puts result.inspect
     end
   end
 

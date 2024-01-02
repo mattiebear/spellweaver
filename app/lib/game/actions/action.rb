@@ -19,6 +19,14 @@ module Game
       private
 
       attr_accessor :data, :game_session_id, :user
+
+      def load_state
+        State::Loader.new(game_session_id).load!
+      end
+
+      def success(event, data = nil)
+        Success(ActionResult.new(event:, data:))
+      end
     end
   end
 end

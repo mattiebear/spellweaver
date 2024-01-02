@@ -2,15 +2,18 @@
 
 module Game
   module Actions
-    # Distributes message data to the appropriate handler
+    # Sends full state of the story
     class SelectMap < Action
-			def execute!
-        puts 'Selecting map for game...'
-        puts data
-
-        # TODO: Change this, obviously
-        Success(ActionResult.new(event: :map_selected, data: data))
-			end
+      def execute!
+        load_state.bind do |state|
+          state.mutate(map_id: data[:map_id]).bind do |updated|
+            author.apply(updated).bind do |saved|
+              # TODO: Refactor this to follow request pattern
+              success(:stub_event, { map_id: saved.map_id })
+            end
+          end
+        end
+      end
     end
   end
 end
