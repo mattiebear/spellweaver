@@ -15,6 +15,10 @@ module Game
       def equals?(position)
         %i[x y z].all? { |axis| send(axis) == position.send(axis) }
       end
+
+      def to_a
+        [x, y, z]
+      end
     end
   end
 end

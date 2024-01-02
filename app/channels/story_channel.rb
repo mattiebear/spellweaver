@@ -30,7 +30,7 @@ class StoryChannel < ApplicationCable::Channel
   private
 
   def send_story_state
-    Game::Actions::StoryState.new(game_session_id:, user:).execute!.bind do |result|
+    Game::Actions::StoryState.new(game_session_id:).execute!.bind do |result|
       broadcast(result)
     end
   end

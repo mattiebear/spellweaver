@@ -7,7 +7,7 @@ module Game
       include Dry::Monads[:result]
 
       def initialize(tokens = {})
-        @tokens = tokens
+        @tokens = to_hash(tokens)
       end
 
       def add_token(token)
@@ -61,9 +61,25 @@ module Game
         end
       end
 
+      def all
+        tokens.map { |_id, token| yield(token) }
+      end
+
       private
 
       attr_accessor :tokens
+
+      def to_hash(tokens)
+        return tokens if tokens.is_a?(Hash)
+
+        hash = {}
+
+        tokens.each do |token|
+          hash[token.id] = token
+        end
+
+        hash
+      end
     end
   end
 end

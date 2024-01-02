@@ -6,7 +6,7 @@ module Game
     class Action
       include Dry::Monads[:result]
 
-      def initialize(game_session_id:, user:, data: nil)
+      def initialize(game_session_id:, user: nil, data: nil)
         self.data = data
         self.game_session_id = game_session_id
         self.user = user

@@ -18,6 +18,15 @@ module Game
       def valid?
         %i[id pos token_id user_id].all? { |attr| send(attr) }
       end
+
+      def to_h
+        {
+          id:,
+          user_id:,
+          token_id:,
+          pos: pos.to_a
+        }
+      end
     end
   end
 end

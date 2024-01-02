@@ -23,6 +23,20 @@ module Game
       end
     end
 
+    def load_each(pattern)
+      keys = client.keys(full_key([pattern, '*']))
+
+      keys.map do |key|
+        data = client.hgetall(key)
+
+        if block_given?
+          yield(data)
+        else
+          data
+        end
+      end
+    end
+
     def save(key, value)
       k = full_key(key)
 
@@ -31,6 +45,10 @@ module Game
       else
         client.set(k, value)
       end
+    end
+
+    def remove(key)
+      client.del(full_key(key))
     end
 
     private
@@ -44,7 +62,7 @@ module Game
     end
 
     def full_key(key)
-      "#{prefix_string}:#{keystore(key)}"
+      [prefix_string, keystore(key)].filter(&:present?).join(':')
     end
 
     def keystore(key)

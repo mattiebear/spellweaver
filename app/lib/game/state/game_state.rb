@@ -11,10 +11,17 @@ module Game
         @map = map
         @map_id = map_id
       end
+
+      def to_h
+        {
+          map_id:,
+          tokens: map.all(&:to_h)
+        }
+      end
     end
 
     private
 
-    attr_accessor :id
+    attr_accessor :id, :map, :map_id
   end
 end
