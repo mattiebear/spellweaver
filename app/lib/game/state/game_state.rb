@@ -4,9 +4,12 @@ module Game
   module State
     # The entire state of the game
     class GameState
+      include Dry::Monads[:result]
+
       delegate :add_token, :move_token, :remove_token, to: :map
 
-      attr_accessor :changes
+      # TODO: Change map_id to value to key in a hash
+      attr_accessor :changes, :id, :map, :map_id
 
       def initialize(id:, map:, map_id: nil)
         @id = id
@@ -38,10 +41,8 @@ module Game
 
       private
 
-      attr_accessor :id, :map, :map_id
-
       def add_changeset(type, key, value)
-        changes << Changeset.new(key:, type:, value:)
+        changes << Sync::Changeset.new(key:, type:, value:)
       end
     end
   end

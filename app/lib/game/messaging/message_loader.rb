@@ -7,7 +7,7 @@ module Game
       include Dry::Monads[:result]
 
       def initialize(source = {})
-        @source = source.with_indifferent_access
+        @source = DataTransformer.new(source).inbound
       end
 
       def message

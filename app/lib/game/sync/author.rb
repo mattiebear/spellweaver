@@ -4,6 +4,8 @@ module Game
   module Sync
     # Saves and loads fields into the database
     class Author
+      include Dry::Monads[:result]
+
       def initialize(prefix = nil)
         @prefix = prefix
       end
@@ -73,15 +75,10 @@ module Game
       end
 
       def keystore(key)
-        case key.class
-        when String
-          prefix
-        when Symbol
-          prefix.to_s
-        when Array
-          prefix.join(':')
+        if key.is_a?(Array)
+          key.map { |k| keystore(k) }.join(':')
         else
-          ''
+          key.to_s
         end
       end
 

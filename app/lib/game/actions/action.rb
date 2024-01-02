@@ -27,6 +27,10 @@ module Game
       def success(event, data = nil)
         Success(ActionResult.new(event:, data:))
       end
+
+      def author
+        @author ||= Sync::Author.new([:story, game_session_id])
+      end
     end
   end
 end

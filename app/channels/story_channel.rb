@@ -20,8 +20,8 @@ class StoryChannel < ApplicationCable::Channel
   end
 
   def receive(data)
-    result = Game::Messaging::MessageLoader.new(data).message.bind do |message|
-      Game::Actions::Director.new(game_session_id:, message:, user:).action.bind(&:execute!)
+    result = message_from(data).bind do |message|
+      init_action(message).bind(&:execute!)
     end
 
     if result.success?
@@ -45,6 +45,14 @@ class StoryChannel < ApplicationCable::Channel
                                    event: result.event,
                                    game_session_id:,
                                    user: current_user).send!
+  end
+
+  def message_from(data)
+    Game::Messaging::MessageLoader.new(data).message
+  end
+
+  def init_action(message)
+    Game::Actions::Director.new(game_session_id:, message:, user:).action
   end
 
     # message = Story::Message.from(data)
