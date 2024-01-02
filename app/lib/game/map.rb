@@ -5,8 +5,8 @@ module Game
   class Map
     include Dry::Monads[:result]
 
-    def initialize
-      @tokens = {}
+    def initialize(tokens = {})
+      @tokens = tokens
     end
 
     def add_token(token)

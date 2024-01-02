@@ -4,10 +4,10 @@ module Game
   module State
     # The entire state of the game
     class GameState
-      def initialize(id:, user:, map: Map.new, map_id: nil)
-        @id = id
-        @user = user
+      delegate :add_token, :move_token, :remove_token, to: :map
 
+      def initialize(id:, map:, map_id: nil)
+        @id = id
         @map = map
         @map_id = map_id
       end
@@ -15,6 +15,6 @@ module Game
 
     private
 
-    attr_accessor :id, :user
+    attr_accessor :id
   end
 end

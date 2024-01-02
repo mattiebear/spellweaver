@@ -3,8 +3,6 @@
 class StoryChannel < ApplicationCable::Channel
   after_subscribe :send_story_state
 
-  # TODO: Notate event data structure in some way
-  # TODO: Create store for send and received events
   CURRENT_STATE = 'current-story-state'
   SELECT_MAP = 'select-map'
   REQUEST_ADD_TOKEN = 'request-add-token'
@@ -21,19 +19,29 @@ class StoryChannel < ApplicationCable::Channel
     stream_from user_key
   end
 
-  # FIXME: This is a mess
   def receive(data)
     Game::Messaging::MessageLoader.new(data).message.bind do |message|
-      Game::Director.new(message).action.bind(&:execute!).bind do |result|
+      Game::Director.new(game_session_id:, message:, user:).action.bind(&:execute!).bind do |result|
         broadcast(result)
       end
     end
+  end
 
-    # action = Game::Director.new(message).action
+  private
 
-    # action.execute!
+  def send_story_state
+    Game::Actions::StoryState.new(game_session_id:, user:).execute!.bind do |result|
+      broadcast(result)
+    end
+  end
 
-    # # TODO: Move actions to isolated class
+  def broadcast(result)
+    Game::Messaging::Broadcast.new(data: result.data,
+                                   event: result.event,
+                                   game_session_id:,
+                                   user: current_user).send!
+  end
+
     # message = Story::Message.from(data)
 
     # case message.event
@@ -48,22 +56,6 @@ class StoryChannel < ApplicationCable::Channel
     # when REQUEST_CHANGE_MAP
     #   request_change_map(message)
     # end
-  end
-
-  private
-
-  def send_story_state
-    Game::Actions::StoryState.new(id: game_session_id).execute!.bind do |result|
-      broadcast(result)
-    end
-  end
-
-  def broadcast(result)
-    Game::Messaging::Broadcast.new(data: result.data,
-                                   event: result.event,
-                                   game_session_id:,
-                                   user: current_user).send!
-  end
 
   # def game_session
   #   @game_session ||= GameSession.find_by(id: story_id)
@@ -125,8 +117,12 @@ class StoryChannel < ApplicationCable::Channel
     "story:#{game_session_id}"
   end
 
+  def user
+    current_user
+  end
+
   def user_id
-    current_user.id
+    user.id
   end
 
   def user_key

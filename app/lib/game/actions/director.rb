@@ -9,8 +9,10 @@ module Game
 
       register_action :select_map, SelectMap
 
-      def initialize(message)
+      def initialize(game_session_id:, message:, user:)
+        @game_session_id = game_session_id
         @message = message
+        @user = user
       end
 
       def action
@@ -19,13 +21,13 @@ module Game
         if klass.nil?
           None()
         else
-          Some(klass.new(message.data))
+          Some(klass.new(data: message.data, game_session_id:, user:))
         end
       end
 
       private
 
-      attr_reader :message
+      attr_reader :game_session_id, :message, :user
     end
   end
 end

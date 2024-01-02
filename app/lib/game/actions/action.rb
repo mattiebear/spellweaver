@@ -6,8 +6,10 @@ module Game
     class Action
       include Dry::Monads[:result]
 
-      def initialize(data = nil)
+      def initialize(game_session_id:, user:, data: nil)
         self.data = data
+        self.game_session_id = game_session_id
+        self.user = user
       end
 
       def execute!
@@ -16,7 +18,7 @@ module Game
 
       private
 
-      attr_accessor :data
+      attr_accessor :data, :game_session_id, :user
     end
   end
 end

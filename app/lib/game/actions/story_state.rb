@@ -4,17 +4,10 @@ module Game
   module Actions
     # Sends full state of the story
     class StoryState < Action
-			def execute!
-        puts 'Sending initial state'
-        puts data
-
-        Success(ActionResult.new(event: :test_event, data: { success: true }))
-			end
-
-      private
-
-      def id
-        
+      def execute!
+        State::Sync.new(game_session_id).load!.bind do |state|
+          Success(ActionResult.new(event: :current_story_state, data: state.to_h))
+        end
       end
     end
   end
