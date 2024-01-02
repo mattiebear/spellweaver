@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Game::Position do
+RSpec.describe Game::Board::Position do
   it 'compares equal position' do
     pos1 = described_class.new(x: 1, y: 2, z: 3)
     pos2 = described_class.new(x: 1, y: 2, z: 3)

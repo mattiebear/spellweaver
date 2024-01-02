@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Game::Map do
+RSpec.describe Game::Board::Map do
   subject(:map) { described_class.new }
 
   it 'initializes with no tokens' do

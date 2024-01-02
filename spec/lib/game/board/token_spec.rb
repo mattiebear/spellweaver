@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Game::Token do
+RSpec.describe Game::Board::Token do
   subject(:token) { described_class.new }
 
   it 'is invalid' do
