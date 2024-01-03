@@ -33,14 +33,21 @@ module Game
 
       def add_token(token)
         map.add_token(token).bind do |t|
-          add_changeset(:set, [:token, t.id], Board::TokenSerializer.new(token).data)
+          commit_token(t)
           Success(t)
         end
       end
 
       def remove_token(id)
         map.remove_token(id).bind do |t|
-          add_changeset(:delete, [:token, t.id])
+          add_changeset(:delete, token_key(t))
+          Success(t)
+        end
+      end
+
+      def move_token(id, pos)
+        map.move_token(id, pos).bind do |t|
+          commit_token(t)
           Success(t)
         end
       end
@@ -59,6 +66,18 @@ module Game
 
       def add_changeset(type, key, value = nil)
         changes << Sync::Changeset.new(key:, type:, value:)
+      end
+
+      def token_key(token)
+        [:token, token.id]
+      end
+
+      def token_data(token)
+        Board::TokenSerializer.new(token).data
+      end
+
+      def commit_token(token)
+        add_changeset(:set, token_key(token), token_data(token))
       end
     end
   end
