@@ -9,7 +9,7 @@ ruby '3.2.2'
 gem 'rails', '~> 7.0.7'
 
 # Server
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 5.6'
 gem 'rack-cors'
 
 # Database and record management
