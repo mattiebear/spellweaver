@@ -33,7 +33,7 @@ module Game
 
       def add_token(token)
         map.add_token(token).bind do |t|
-          add_changeset(:set, [:tokens, t.id], fields)
+          add_changeset(:set, [:token, t.id], Board::TokenSerializer.new(token).data)
           Success(t)
         end
       end

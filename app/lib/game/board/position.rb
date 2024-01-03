@@ -22,6 +22,8 @@ module Game
 
       def load(array)
         self.x, self.y, self.z = *array
+
+        self
       end
     end
   end

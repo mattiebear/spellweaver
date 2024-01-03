@@ -3,8 +3,8 @@
 module Game
   module Board
     class TokenLoader
-      def initialize(**data)
-        @data = data.with_indifferent_access
+      def initialize(data)
+        @data = data.symbolize_keys
       end
 
       def token
@@ -30,15 +30,15 @@ module Game
       end
 
       def x
-        @data[:x]
+        @data[:x].to_i
       end
 
       def y
-        @data[:y]
+        @data[:y].to_i
       end
 
       def z
-        @data[:z]
+        @data[:z].to_i
       end
     end
   end
