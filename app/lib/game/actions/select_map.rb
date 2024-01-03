@@ -6,10 +6,9 @@ module Game
     class SelectMap < Action
       def execute!
         load_state.bind do |state|
-          state.mutate(map_id: data[:map_id]).bind do |updated|
+          state.update(map_id: data[:map_id]).bind do |updated|
             author.apply(updated).bind do |saved|
-              # TODO: Refactor this to follow request pattern
-              success(:stub_event, { map_id: saved.map_id })
+              success(:stub_event, saved.fields)
             end
           end
         end

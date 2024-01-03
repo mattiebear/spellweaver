@@ -26,10 +26,9 @@ class StoryChannel < ApplicationCable::Channel
 
     if result.success?
       broadcast(result.value!)
-    else
-      puts 'result is'
-      puts result.inspect
     end
+
+    # TODO: Add failure handling
   end
 
   private

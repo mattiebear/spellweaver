@@ -27,6 +27,11 @@ module Game
           pos: pos.to_a
         }
       end
+
+      def generate_id!
+        self.id = SecureRandom.uuid
+        self
+      end
     end
   end
 end

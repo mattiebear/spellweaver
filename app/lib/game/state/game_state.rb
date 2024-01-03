@@ -6,37 +6,46 @@ module Game
     class GameState
       include Dry::Monads[:result]
 
-      delegate :add_token, :move_token, :remove_token, to: :map
+      # List of single value fields to track for each map
+      TRACKED_FIELDS = %i[map_id].freeze
 
-      # TODO: Change map_id to value to key in a hash
-      attr_accessor :changes, :id, :map, :map_id
+      attr_accessor :changes, :fields, :id, :map
 
-      def initialize(id:, map:, map_id: nil)
+      def initialize(id:, map:, fields: {})
         @id = id
+        @fields = fields
         @map = map
-        @map_id = map_id
 
         @changes = []
       end
 
-      def mutate(data)
-        data.each_key do |key|
-          return Failure("Invalid key: #{key}") unless defined?("#{key}=")
+      def update(data)
+        data.each do |key, value|
+          return Failure("Invalid key: #{key}") unless TRACKED_FIELDS.include?(key)
+
+          fields[key] = value
         end
 
-        data.each do |key, value|
-          send("#{key}=", value)
-          add_changeset(:set, key, value)
-        end
+        add_changeset(:set, :fields, fields)
 
         Success(self)
       end
 
+      def add_token(token)
+        map.add_token(token).bind do |t|
+          add_changeset(:set, [:tokens, t.id], fields)
+          Success(t)
+        end
+      end
+
       def to_h
-        {
-          map_id:,
-          tokens: map.to_a
-        }
+        data = { tokens: map.to_a }
+
+        TRACKED_FIELDS.each do |attr|
+          data[attr] = fields[attr]
+        end
+
+        data
       end
 
       private

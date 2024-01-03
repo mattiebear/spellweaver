@@ -11,10 +11,6 @@ module Game
       end
 
       def load(key)
-        client.get(full_key(key))
-      end
-
-      def load_hash(key)
         data = client.hgetall(full_key(key))
 
         if block_given?

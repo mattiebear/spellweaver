@@ -19,6 +19,10 @@ module Game
       def to_a
         [x, y, z]
       end
+
+      def load(array)
+        self.x, self.y, self.z = *array
+      end
     end
   end
 end

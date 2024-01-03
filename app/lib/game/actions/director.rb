@@ -8,6 +8,7 @@ module Game
       include Dry::Monads[:maybe]
 
       register_action :select_map, SelectMap
+      register_action :request_add_token, AddToken
 
       def initialize(game_session_id:, message:, user:)
         @game_session_id = game_session_id

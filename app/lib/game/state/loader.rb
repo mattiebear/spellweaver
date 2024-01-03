@@ -11,7 +11,7 @@ module Game
       end
 
       def load!
-        Success(GameState.new(id:, map:, map_id:))
+        Success(GameState.new(id:, fields:, map:))
       end
 
       private
@@ -22,12 +22,8 @@ module Game
         @author ||= Sync::Author.new([:story, id])
       end
 
-      def load_field(field)
-        author.load(field)
-      end
-
-      def map_id
-        @map_id ||= load_field(:map_id)
+      def fields
+        author.load(:fields).symbolize_keys
       end
 
       def map

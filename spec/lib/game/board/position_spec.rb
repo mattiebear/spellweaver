@@ -16,4 +16,13 @@ RSpec.describe Game::Board::Position do
 
     expect(pos1.equals?(pos2)).to be(false)
   end
+
+  it 'loads data from an array' do
+    pos = described_class.new
+    pos.load([1, 2, 3])
+
+    expect(pos.x).to eq(1)
+    expect(pos.y).to eq(2)
+    expect(pos.z).to eq(3)
+  end
 end
