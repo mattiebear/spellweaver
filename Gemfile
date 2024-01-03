@@ -25,6 +25,9 @@ gem 'clerk-sdk-ruby', require: 'clerk'
 gem 'jwt'
 gem 'pundit'
 
+# Pattern utilities
+gem 'dry-monads'
+
 # Platform augments
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
