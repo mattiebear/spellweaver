@@ -2,14 +2,16 @@
 
 module Game
   module Actions
-    # Select initial map
-    class SelectMap < Action
+    # Change selected map
+    class ChangeMap < Action
       def execute!
         load_state.bind do |state|
           state.update(map_id: data[:map_id]).bind do |updated|
-            author.apply(updated).bind do |saved|
-              success(:stub_event, saved.fields)
-            end
+						updated.clear_tokens.bind do |cleared|
+							author.apply(cleared).bind do |saved|
+								success(:change_map, map_id: saved.fields[:map_id])
+							end
+						end
           end
         end
       end

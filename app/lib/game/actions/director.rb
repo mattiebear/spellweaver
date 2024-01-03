@@ -11,6 +11,7 @@ module Game
       register_action :request_add_token, AddToken
       register_action :request_remove_token, RemoveToken
       register_action :request_move_token, MoveToken
+      register_action :request_change_map, ChangeMap
 
       def initialize(game_session_id:, message:, user:)
         @game_session_id = game_session_id

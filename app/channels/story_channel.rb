@@ -24,9 +24,9 @@ class StoryChannel < ApplicationCable::Channel
       init_action(message).bind(&:execute!)
     end
 
-    if result.success?
-      broadcast(result.value!)
-    end
+    return unless result.success?
+
+    broadcast(result.value!)
 
     # TODO: Add failure handling
   end
@@ -54,20 +54,20 @@ class StoryChannel < ApplicationCable::Channel
     Game::Actions::Director.new(game_session_id:, message:, user:).action
   end
 
-    # message = Story::Message.from(data)
+  # message = Story::Message.from(data)
 
-    # case message.event
-    # when SELECT_MAP
-    #   save_selected_map(message)
-    # when REQUEST_ADD_TOKEN
-    #   request_add_token(message)
-    # when REQUEST_REMOVE_TOKEN
-    #   request_remove_token(message)
-    # when REQUEST_MOVE_TOKEN
-    #   request_move_token(message)
-    # when REQUEST_CHANGE_MAP
-    #   request_change_map(message)
-    # end
+  # case message.event
+  # when SELECT_MAP
+  #   save_selected_map(message)
+  # when REQUEST_ADD_TOKEN
+  #   request_add_token(message)
+  # when REQUEST_REMOVE_TOKEN
+  #   request_remove_token(message)
+  # when REQUEST_MOVE_TOKEN
+  #   request_move_token(message)
+  # when REQUEST_CHANGE_MAP
+  #   request_change_map(message)
+  # end
 
   # def game_session
   #   @game_session ||= GameSession.find_by(id: story_id)

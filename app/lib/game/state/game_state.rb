@@ -52,6 +52,14 @@ module Game
         end
       end
 
+      def clear_tokens
+        map.clear_tokens do |token|
+          add_changeset(:delete, token_key(token))
+        end
+
+        Success(self)
+      end
+
       def to_h
         data = { tokens: map.to_a }
 

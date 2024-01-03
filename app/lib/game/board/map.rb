@@ -65,6 +65,12 @@ module Game
         tokens.map { |_id, token| token.to_h }
       end
 
+      def clear_tokens(&)
+        tokens.each_key do |id|
+          remove_token(id).bind(&)
+        end
+      end
+
       private
 
       attr_accessor :tokens
