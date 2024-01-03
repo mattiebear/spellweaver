@@ -11,7 +11,6 @@ module GameSessions
 
     def tasks
       validate_status
-      initialize_live_session
       destroy_live_session
       update_session_params
     end
@@ -22,12 +21,6 @@ module GameSessions
 
     def validate_status
       raise ConflictError.new.add('status', ErrorCode::INVALID, 'Invalid status') if completed? || restricted?
-    end
-
-    def initialize_live_session
-      return unless initialize?
-
-      GameSessions::InitializeService.new(game_session:).run!
     end
 
     def destroy_live_session
@@ -52,10 +45,6 @@ module GameSessions
 
     def restricted?
       game_session.active? && status != 'complete'
-    end
-
-    def initialize?
-      status == 'active'
     end
 
     def destroy?

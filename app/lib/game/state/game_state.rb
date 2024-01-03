@@ -11,7 +11,7 @@ module Game
 
       attr_accessor :changes, :fields, :id, :map
 
-      def initialize(id:, map:, fields: {})
+      def initialize(id:, map: Board::Map.new, fields: {})
         @id = id
         @fields = fields
         @map = map
