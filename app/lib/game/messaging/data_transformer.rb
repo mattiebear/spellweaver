@@ -15,7 +15,7 @@ module Game
       end
 
       def inbound
-        @inbound ||= data.deep_transform_keys { |key| key.underscore.to_sym }
+        @inbound ||= data.deep_transform_keys { |key| key.to_s.underscore.to_sym }
       end
     end
   end
