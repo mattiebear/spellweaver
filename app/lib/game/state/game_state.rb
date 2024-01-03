@@ -19,6 +19,12 @@ module Game
         @changes = []
       end
 
+      def destroy!
+        clear_tokens.bind do
+          add_changeset(:delete, :fields)
+        end
+      end
+
       def update(data)
         data.each do |key, value|
           return Failure("Invalid key: #{key}") unless TRACKED_FIELDS.include?(key)

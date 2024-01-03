@@ -18,20 +18,28 @@ module GameSessions
     attr_accessor :game_session
 
     def destroy_story_cache
-      book = Story::Book.new(game_session).load!
-      book.destroy!
+      Game::State::Loader.new(game_session.id).load!.bind do |state|
+        state.destroy! do
+          author.apply(state)
+        end
+      end
     end
 
+    # TODO: Try to use game classes for this
     def send_destroyed_event
       ActionCable.server.broadcast(story_key, message.to_h)
     end
 
     def message
-      Story::Message.new('complete-story')
+      Game::Messaging::Message.new(event: 'complete-story')
     end
 
     def story_key
       "story:#{game_session.id}"
+    end
+
+    def author
+      @author ||= Game::Sync::Author.new([:story, game_session.id])
     end
   end
 end
