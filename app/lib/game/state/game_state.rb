@@ -38,6 +38,13 @@ module Game
         end
       end
 
+      def remove_token(id)
+        map.remove_token(id).bind do |t|
+          add_changeset(:delete, [:token, t.id])
+          Success(t)
+        end
+      end
+
       def to_h
         data = { tokens: map.to_a }
 
@@ -50,7 +57,7 @@ module Game
 
       private
 
-      def add_changeset(type, key, value)
+      def add_changeset(type, key, value = nil)
         changes << Sync::Changeset.new(key:, type:, value:)
       end
     end
