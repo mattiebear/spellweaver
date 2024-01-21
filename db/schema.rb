@@ -15,20 +15,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_122440) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "connection_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "user_id"
-    t.integer "role"
-    t.uuid "connection_id", null: false
+  create_table "game_maps", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "user_id", null: false
+    t.string "name", null: false
+    t.json "atlas", default: {"version"=>"1", "data"=>{"floors"=>[], "walls"=>[]}}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["connection_id"], name: "index_connection_users_on_connection_id"
-    t.index ["user_id"], name: "index_connection_users_on_user_id"
+    t.index ["user_id", "name"], name: "index_game_maps_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_game_maps_on_user_id"
   end
 
-  create_table "connections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "status", default: 0
+  create_table "game_players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "role", default: 0
+    t.uuid "session_id", null: false
+    t.string "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_game_players_on_session_id"
+    t.index ["user_id"], name: "index_game_players_on_user_id"
   end
 
   create_table "game_sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -38,26 +42,22 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_122440) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "maps", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "user_id", null: false
-    t.string "name", null: false
-    t.json "atlas", default: {"version"=>"1", "data"=>{"floors"=>[], "walls"=>[]}}, null: false
+  create_table "network_connections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id", "name"], name: "index_maps_on_user_id_and_name", unique: true
-    t.index ["user_id"], name: "index_maps_on_user_id"
   end
 
-  create_table "players", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "role", default: 0
-    t.uuid "game_session_id", null: false
-    t.string "user_id", null: false
+  create_table "network_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "user_id"
+    t.integer "role"
+    t.uuid "connection_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["game_session_id"], name: "index_players_on_game_session_id"
-    t.index ["user_id"], name: "index_players_on_user_id"
+    t.index ["connection_id"], name: "index_network_users_on_connection_id"
+    t.index ["user_id"], name: "index_network_users_on_user_id"
   end
 
-  add_foreign_key "connection_users", "connections"
-  add_foreign_key "players", "game_sessions"
+  add_foreign_key "game_players", "game_sessions", column: "session_id"
+  add_foreign_key "network_users", "network_connections", column: "connection_id"
 end

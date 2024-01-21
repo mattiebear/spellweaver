@@ -2,7 +2,7 @@
 
 # == Schema Information
 #
-# Table name: maps
+# Table name: game_maps
 #
 #  id         :uuid             not null, primary key
 #  atlas      :json             not null
@@ -13,8 +13,8 @@
 #
 # Indexes
 #
-#  index_maps_on_user_id           (user_id)
-#  index_maps_on_user_id_and_name  (user_id,name) UNIQUE
+#  index_game_maps_on_user_id           (user_id)
+#  index_game_maps_on_user_id_and_name  (user_id,name) UNIQUE
 #
 module Game
   class Map < ApplicationRecord

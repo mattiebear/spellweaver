@@ -11,7 +11,7 @@
 #  updated_at :datetime         not null
 #
 module Game
-  class GameSession < ApplicationRecord
+  class Session < ApplicationRecord
     has_many :players, class_name: 'Game::Player', dependent: :destroy
 
     enum status: {

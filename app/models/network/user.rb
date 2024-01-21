@@ -2,7 +2,7 @@
 
 # == Schema Information
 #
-# Table name: connection_users
+# Table name: network_users
 #
 #  id            :uuid             not null, primary key
 #  role          :integer
@@ -13,15 +13,15 @@
 #
 # Indexes
 #
-#  index_connection_users_on_connection_id  (connection_id)
-#  index_connection_users_on_user_id        (user_id)
+#  index_network_users_on_connection_id  (connection_id)
+#  index_network_users_on_user_id        (user_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (connection_id => connections.id)
+#  fk_rails_...  (connection_id => network_connections.id)
 #
 module Network
-  class ConnectionUser < ApplicationRecord
+  class User < ApplicationRecord
     include Ownable
 
     belongs_to :connection, class_name: 'Network::Connection'

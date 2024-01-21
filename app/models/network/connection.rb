@@ -2,7 +2,7 @@
 
 # == Schema Information
 #
-# Table name: connections
+# Table name: network_connections
 #
 #  id         :uuid             not null, primary key
 #  status     :integer          default("pending")
