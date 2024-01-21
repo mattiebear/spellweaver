@@ -13,7 +13,7 @@ class CreateGameMaps < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :maps, %i[user_id name], unique: true
-    add_index :maps, :user_id
+    add_index :game_maps, %i[user_id name], unique: true
+    add_index :game_maps, :user_id
   end
 end
