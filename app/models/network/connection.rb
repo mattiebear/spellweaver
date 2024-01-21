@@ -29,7 +29,7 @@ module Network
     end
 
     def self.policy_class
-      Network::ConnectionPolicy
+      ConnectionPolicy
     end
   end
 end

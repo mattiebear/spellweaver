@@ -52,12 +52,12 @@ module Connections
       Network::Connection.transaction do
         connection = Network::Connection.create(status: 'pending')
 
-        connection.connection_users.create([
+        connection.users.create([
                                              { user_id: user.id, role: 'requester' },
                                              { user_id: recipient.id, role: 'recipient' }
                                            ])
 
-        connection.connection_users.reload
+        connection.users.reload
 
         self.result = connection
       end

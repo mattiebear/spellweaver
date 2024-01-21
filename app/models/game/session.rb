@@ -39,5 +39,9 @@ module Game
     def player?(user)
       includes_user?(user) && !owner?(user)
     end
+
+    def self.policy_class
+      SessionPolicy
+    end
   end
 end

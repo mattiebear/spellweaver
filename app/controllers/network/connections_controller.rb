@@ -3,7 +3,7 @@
 module Network
   class ConnectionsController < ApplicationController
     def index
-      connections = policy_scope(Connection).includes(:connection_users)
+      connections = policy_scope(Connection).includes(:users)
 
       render json: ConnectionBlueprint.render(connections)
     end

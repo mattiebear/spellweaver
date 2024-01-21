@@ -17,9 +17,9 @@ module Game
     end
 
     def create
-      authorize :session
+      authorize :session, policy_class: Session.policy_class
 
-      service = Sessions::CreateService.new(
+      service = GameSessions::CreateService.new(
         user: current_user,
         name: params[:name],
         user_ids: params[:user_ids]
@@ -33,8 +33,8 @@ module Game
 
       authorize session
 
-      service = Sessions::UpdateService.new(
-        session:,
+      service = GameSessions::UpdateService.new(
+        game_session: session,
         params: session_params
       ).run!
 

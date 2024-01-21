@@ -18,7 +18,7 @@ module Game
     end
 
     def create
-      authorize :map
+      authorize :map, policy_class: Map.policy_class
 
       map = Map.new(map_params).tap do |record|
         record.user_id = current_user.id
