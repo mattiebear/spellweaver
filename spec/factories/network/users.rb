@@ -21,12 +21,12 @@
 #  fk_rails_...  (connection_id => connections.id)
 #
 FactoryBot.define do
-  factory :connection_user do
+  factory :network_user do
     role { 'requester' }
 
     sequence(:user_id) { |n| "user_#{n}" }
 
-    connection
+    connection { association :network_connection }
 
     after(:build) do |player|
       player.user = build(:user, id: player.user_id)

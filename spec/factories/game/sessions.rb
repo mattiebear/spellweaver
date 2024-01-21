@@ -11,7 +11,7 @@
 #  updated_at :datetime         not null
 #
 FactoryBot.define do
-  factory :game_session do
+  factory :game_session, class: 'Game::Session' do
     status { 'pending' }
     name { 'Game Session' }
   end

@@ -17,7 +17,7 @@
 #  index_maps_on_user_id_and_name  (user_id,name) UNIQUE
 #
 FactoryBot.define do
-  factory :map do
+  factory :game_map, class: 'Game::Map' do
     atlas { { version: '1', data: {} } }
 
     sequence(:user_id) { |n| "user_#{n}" }

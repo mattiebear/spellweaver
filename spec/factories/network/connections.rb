@@ -10,7 +10,7 @@
 #  updated_at :datetime         not null
 #
 FactoryBot.define do
-  factory :connection do
+  factory :network_connection, class: 'Network::Connection' do
     status { 'accepted' }
   end
 end

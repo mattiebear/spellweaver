@@ -3,7 +3,7 @@
 require 'securerandom'
 
 FactoryBot.define do
-  factory :user, class: 'Rogue::User' do
+  factory :access_user, class: 'Rogue::User' do
     id { "user_#{SecureRandom.hex}" }
     image_url { 'https://www.example.com/image' }
 

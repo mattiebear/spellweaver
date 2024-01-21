@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :token, class: 'Game::Board::Token' do
+  factory :game_board_token, class: 'Game::Board::Token' do
     id { SecureRandom.uuid }
     pos { association :position }
     token_id { SecureRandom.uuid }

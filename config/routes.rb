@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   get '/ping', to: 'health#index'
 
-  resources :connections
-  resources :game_sessions
-  resources :maps
+  resources :connections, controller: 'network/connections'
+  resources :maps, controller: 'game/maps'
+  resources :sessions, controller: 'game/sessions'
 end
