@@ -12,7 +12,7 @@ RSpec.describe Game::MapPolicy, type: :policy do
       other_user = build(:access_user)
       create_list(:game_map, 3, user_id: other_user.id)
 
-      records = described_class::Scope.new(user, Map).resolve
+      records = described_class::Scope.new(user, Game::Map).resolve
 
       expect(records.pluck(:id)).to match_array(maps.pluck(:id))
     end

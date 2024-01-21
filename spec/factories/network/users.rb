@@ -21,7 +21,7 @@
 #  fk_rails_...  (connection_id => connections.id)
 #
 FactoryBot.define do
-  factory :network_user do
+  factory :network_user, class: 'Network::User' do
     role { 'requester' }
 
     sequence(:user_id) { |n| "user_#{n}" }

@@ -13,7 +13,7 @@ RSpec.describe Game::SessionPolicy, type: :policy do
 
       create(:game_session, players: create_list(:game_player, 1))
 
-      records = described_class::Scope.new(user, GameSession).resolve
+      records = described_class::Scope.new(user, Game::Session).resolve
 
       expect(records.pluck(:id)).to contain_exactly(owner.id, participant.id)
     end

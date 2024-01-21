@@ -7,17 +7,17 @@ RSpec.describe Network::ConnectionPolicy, type: :policy do
 
   permissions '.scope' do
     it 'scopes to records on which the user is a participant' do
-      recipient_connection = create(:connection,
+      recipient_connection = create(:network_connection,
                                     users: create_list(:network_user, 1, role: 'recipient',
                                                                          user_id: user.id))
 
-      requester_connection = create(:connection,
+      requester_connection = create(:network_connection,
                                     users: create_list(:network_user, 1, role: 'requester',
                                                                          user_id: user.id))
 
-      create(:connection, users: create_list(:network_user, 1))
+      create(:network_connection, users: create_list(:network_user, 1))
 
-      records = described_class::Scope.new(user, Connection).resolve
+      records = described_class::Scope.new(user, Network::Connection).resolve
 
       expect(records.pluck(:id)).to contain_exactly(recipient_connection.id, requester_connection.id)
     end
@@ -31,7 +31,7 @@ RSpec.describe Network::ConnectionPolicy, type: :policy do
 
   permissions :show?, :update?, :destroy? do
     it 'permits if the user is a participant' do
-      connection = create(:connection,
+      connection = create(:network_connection,
                           users: create_list(:network_user, 1, role: 'recipient',
                                                                user_id: user.id))
 
@@ -39,7 +39,7 @@ RSpec.describe Network::ConnectionPolicy, type: :policy do
     end
 
     it 'denies if the user is not a participant' do
-      connection = create(:connection, users: create_list(:network_user, 1))
+      connection = create(:network_connection, users: create_list(:network_user, 1))
 
       expect(described_class).not_to permit(user, connection)
     end
