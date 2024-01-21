@@ -20,13 +20,15 @@
 #
 #  fk_rails_...  (connection_id => connections.id)
 #
-class ConnectionUser < ApplicationRecord
-  include Ownable
+module Network
+  class ConnectionUser < ApplicationRecord
+    include Ownable
 
-  belongs_to :connection
+    belongs_to :connection, class_name: 'Network::Connection'
 
-  enum role: {
-    requester: 0,
-    recipient: 1
-  }
+    enum role: {
+      requester: 0,
+      recipient: 1
+    }
+  end
 end

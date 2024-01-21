@@ -20,13 +20,15 @@
 #
 #  fk_rails_...  (game_session_id => game_sessions.id)
 #
-class Player < ApplicationRecord
-  include Ownable
+module Game
+  class Player < ApplicationRecord
+    include Ownable
 
-  belongs_to :game_session
+    belongs_to :session, class_name: 'Game::Session'
 
-  enum role: {
-    participant: 0,
-    owner: 1
-  }
+    enum role: {
+      participant: 0,
+      owner: 1
+    }
+  end
 end
