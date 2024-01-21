@@ -22,12 +22,12 @@
 #
 require 'rails_helper'
 
-RSpec.describe ConnectionUser do
+RSpec.describe Network::User do
   describe 'factory' do
     it 'has a valid factory' do
-      connection_user = build(:connection_user)
+      user = build(:network_user)
 
-      expect(connection_user).to be_valid
+      expect(user).to be_valid
     end
   end
 

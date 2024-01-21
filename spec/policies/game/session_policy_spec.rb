@@ -2,16 +2,16 @@
 
 require 'rails_helper'
 
-RSpec.describe GameSessionPolicy, type: :policy do
-  let(:user) { build(:user) }
+RSpec.describe Game::SessionPolicy, type: :policy do
+  let(:user) { build(:access_user) }
 
   permissions '.scope' do
     it 'scopes to records on which the user is a participant' do
-      owner = create(:game_session, players: create_list(:player, 1, role: 'owner', user_id: user.id))
+      owner = create(:game_session, players: create_list(:game_player, 1, role: 'owner', user_id: user.id))
 
-      participant = create(:game_session, players: create_list(:player, 1, role: 'participant', user_id: user.id))
+      participant = create(:game_session, players: create_list(:game_player, 1, role: 'participant', user_id: user.id))
 
-      create(:game_session, players: create_list(:player, 1))
+      create(:game_session, players: create_list(:game_player, 1))
 
       records = described_class::Scope.new(user, GameSession).resolve
 
@@ -28,7 +28,7 @@ RSpec.describe GameSessionPolicy, type: :policy do
   permissions :show? do
     it 'permits if the user is a player' do
       game_session = create(:game_session,
-                            players: create_list(:player, 1, role: 'participant', user_id: user.id))
+                            players: create_list(:game_player, 1, role: 'participant', user_id: user.id))
 
       expect(described_class).to permit(user, game_session)
     end
@@ -37,14 +37,14 @@ RSpec.describe GameSessionPolicy, type: :policy do
   permissions :update?, :destroy? do
     it 'permits if the user is an owner' do
       game_session = create(:game_session,
-                            players: create_list(:player, 1, role: 'owner', user_id: user.id))
+                            players: create_list(:game_player, 1, role: 'owner', user_id: user.id))
 
       expect(described_class).to permit(user, game_session)
     end
 
     it 'denies if the user is a participant player' do
       game_session = create(:game_session,
-                            players: create_list(:player, 1, role: 'participant', user_id: user.id))
+                            players: create_list(:game_player, 1, role: 'participant', user_id: user.id))
 
       expect(described_class).not_to permit(user, game_session)
     end

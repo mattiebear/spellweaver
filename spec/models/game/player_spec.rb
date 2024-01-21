@@ -22,10 +22,10 @@
 #
 require 'rails_helper'
 
-RSpec.describe Player do
+RSpec.describe Game::Player do
   describe 'factory' do
     it 'has a valid factory' do
-      player = build(:player)
+      player = build(:game_player)
 
       expect(player).to be_valid
     end
@@ -40,6 +40,6 @@ RSpec.describe Player do
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:game_session) }
+    it { is_expected.to belong_to(:session) }
   end
 end

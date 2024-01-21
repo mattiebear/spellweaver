@@ -18,7 +18,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Map do
+RSpec.describe Game::Map do
   describe 'validations' do
     it { is_expected.to validate_presence_of :name }
     it { is_expected.to validate_length_of(:name).is_at_least(1).is_at_most(250) }
@@ -26,7 +26,7 @@ RSpec.describe Map do
     it { is_expected.to validate_presence_of :user_id }
 
     it 'validates user id format' do
-      map = build(:map, user_id: 'blah')
+      map = build(:game_map, user_id: 'blah')
 
       map.validate
 
@@ -36,7 +36,7 @@ RSpec.describe Map do
     it { is_expected.to validate_presence_of :atlas }
 
     it 'validates atlas format' do
-      map = build(:map, atlas: [])
+      map = build(:game_map, atlas: [])
 
       map.validate
 

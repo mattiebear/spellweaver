@@ -53,9 +53,9 @@ module Connections
         connection = Network::Connection.create(status: 'pending')
 
         connection.users.create([
-                                             { user_id: user.id, role: 'requester' },
-                                             { user_id: recipient.id, role: 'recipient' }
-                                           ])
+                                  { user_id: user.id, role: 'requester' },
+                                  { user_id: recipient.id, role: 'recipient' }
+                                ])
 
         connection.users.reload
 

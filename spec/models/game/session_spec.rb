@@ -12,7 +12,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe GameSession do
+RSpec.describe Game::Session do
   describe 'factory' do
     it 'has a valid factory' do
       game_session = build(:game_session)

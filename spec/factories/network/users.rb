@@ -29,7 +29,7 @@ FactoryBot.define do
     connection { association :network_connection }
 
     after(:build) do |player|
-      player.user = build(:user, id: player.user_id)
+      player.user = build(:access_user, id: player.user_id)
     end
   end
 end

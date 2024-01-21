@@ -11,17 +11,17 @@
 #
 require 'rails_helper'
 
-RSpec.describe Connection do
+RSpec.describe Network::Connection do
   describe 'factory' do
     it 'has a valid factory' do
-      connection = build(:connection)
+      connection = build(:network_connection)
 
       expect(connection).to be_valid
     end
   end
 
   describe 'associations' do
-    it { is_expected.to have_many(:connection_users).dependent(:destroy) }
+    it { is_expected.to have_many(:users).dependent(:destroy) }
   end
 
   describe 'attributes' do

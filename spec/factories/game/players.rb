@@ -21,7 +21,7 @@
 #  fk_rails_...  (game_session_id => game_sessions.id)
 #
 FactoryBot.define do
-  factory :player, class: 'Game::Player' do
+  factory :game_player, class: 'Game::Player' do
     role { 'participant' }
 
     sequence(:user_id) { |n| "user_#{n}" }
@@ -29,7 +29,7 @@ FactoryBot.define do
     session { association :game_session }
 
     after(:build) do |player|
-      player.user = build(:user, id: player.user_id)
+      player.user = build(:access_user, id: player.user_id)
     end
   end
 end

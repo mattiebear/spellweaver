@@ -11,7 +11,7 @@ RSpec.describe Game::Board::Map do
 
   describe '#add_token' do
     it 'adds a token' do
-      token = build(:token)
+      token = build(:game_board_token)
 
       result = map.add_token(token)
 
@@ -20,11 +20,11 @@ RSpec.describe Game::Board::Map do
     end
 
     it 'fails to add a token at an occupied position' do
-      pos = build(:position)
-      token = build(:token, pos:)
+      pos = build(:game_board_position)
+      token = build(:game_board_token, pos:)
       map.add_token(token)
 
-      result = map.add_token(build(:token, pos:))
+      result = map.add_token(build(:game_board_token, pos:))
 
       expect(result).to be_failure
       expect(map.token_count).to eq(1)
@@ -33,20 +33,20 @@ RSpec.describe Game::Board::Map do
 
   describe '#move_token' do
     it 'moves a token' do
-      token = build(:token)
+      token = build(:game_board_token)
       map.add_token(token)
 
-      result = map.move_token(token.id, build(:position, x: 1))
+      result = map.move_token(token.id, build(:game_board_position, x: 1))
 
       expect(result).to be_success
     end
 
     it 'fails to move a token to an occupied position' do
-      token = build(:token)
+      token = build(:game_board_token)
       map.add_token(token)
-      map.add_token(build(:token, pos: build(:position, x: 1)))
+      map.add_token(build(:game_board_token, pos: build(:game_board_position, x: 1)))
 
-      result = map.move_token(token.id, build(:position, x: 1))
+      result = map.move_token(token.id, build(:game_board_position, x: 1))
 
       expect(result).to be_failure
     end
@@ -54,7 +54,7 @@ RSpec.describe Game::Board::Map do
 
   describe '#remove_token' do
     it 'removes a token' do
-      token = build(:token)
+      token = build(:game_board_token)
       map.add_token(token)
 
       result = map.remove_token(token.id)
@@ -72,7 +72,7 @@ RSpec.describe Game::Board::Map do
 
   describe '#get_token' do
     it 'gets a token' do
-      token = build(:token)
+      token = build(:game_board_token)
       map.add_token(token)
 
       result = map.get_token(token.id)
