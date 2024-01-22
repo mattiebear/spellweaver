@@ -40,7 +40,7 @@ module Connections
     end
 
     def validate_existing_connection
-      connection = Connection.between(user, recipient)
+      connection = Network::Connection.between(user, recipient)
 
       return if connection.blank?
 
@@ -49,15 +49,15 @@ module Connections
     end
 
     def create_connection
-      Connection.transaction do
-        connection = Connection.create(status: 'pending')
+      Network::Connection.transaction do
+        connection = Network::Connection.create(status: 'pending')
 
-        connection.connection_users.create([
-                                             { user_id: user.id, role: 'requester' },
-                                             { user_id: recipient.id, role: 'recipient' }
-                                           ])
+        connection.users.create([
+                                  { user_id: user.id, role: 'requester' },
+                                  { user_id: recipient.id, role: 'recipient' }
+                                ])
 
-        connection.connection_users.reload
+        connection.users.reload
 
         self.result = connection
       end

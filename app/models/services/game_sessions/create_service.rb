@@ -28,8 +28,8 @@ module GameSessions
     end
 
     def create_game_session
-      GameSession.transaction do
-        game_session = GameSession.create(name:, status: 'pending')
+      Game::Session.transaction do
+        game_session = Game::Session.create(name:, status: 'pending')
 
         game_session.players.create(users)
         game_session.players.reload

@@ -11,7 +11,7 @@ RSpec.describe Game::Board::Token do
 
   it 'is valid with all attributes' do
     token.id = SecureRandom.uuid
-    token.pos = build(:position)
+    token.pos = build(:game_board_position)
     token.token_id = SecureRandom.uuid
     token.user_id = SecureRandom.uuid
 
