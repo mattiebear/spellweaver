@@ -3,9 +3,13 @@
 module Network
   class ConnectionsController < ApplicationController
     def index
-      connections = policy_scope(Connection).includes(:users)
+      result = Network::GetConnections.new(for: current_user).execute
 
-      render json: ConnectionBlueprint.render(connections)
+      if result.success?
+        render json: ConnectionBlueprint.render(result.value!)
+      else
+        render result.failure.to_response
+      end
     end
 
     def create
