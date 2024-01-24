@@ -3,9 +3,9 @@
 class CommandFailure
   attr_reader :data, :message, :status
 
-  def initialize(message, status, data = [])
+  def initialize(status)
     @data = data
-    @message = message
+    @message = generate_message
     @status = status
   end
 
@@ -33,4 +33,8 @@ class CommandFailure
   private
 
   attr_writer :data
+
+  def generate_message
+    self.message = status.to_s.titleize
+  end
 end

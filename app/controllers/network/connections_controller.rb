@@ -13,17 +13,17 @@ module Network
     end
 
     def create
-      authorize :connection, policy_class: Connection.policy_class
+      result = Network::CreateConnection.new(from: current_user, to: params[:username]).execute
 
-      service = Connections::CreateService.new(user: current_user, username: params[:username]).run!
-
-      render json: ConnectionBlueprint.render(service.result)
+      if result.success?
+        render json: ConnectionBlueprint.render(result.value!)
+      else
+        render result.failure.to_response
+      end
     end
 
     def update
       connection = Connection.find(params[:id])
-
-      authorize connection
 
       connection.update(connection_params)
 
@@ -32,8 +32,6 @@ module Network
 
     def destroy
       connection = Connection.find(params[:id])
-
-      authorize connection
 
       connection.destroy!
     end
