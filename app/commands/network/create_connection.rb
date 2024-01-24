@@ -6,7 +6,6 @@ module Network
     include Dry::Monads::Do.for(:execute)
 
     def initialize(from:, to:)
-      @user_client = Rogue::UserClient.new
       @user = from
       @to = to
     end

@@ -3,6 +3,7 @@
 # Main controller for application
 class ApplicationController < ActionController::API
   include Rogue::JwtAuthenticable
+  include Transmittable
 
   before_action :authenticate_user
 

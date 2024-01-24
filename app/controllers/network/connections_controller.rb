@@ -5,29 +5,19 @@ module Network
     def index
       result = Network::GetConnections.new(for: current_user).execute
 
-      if result.success?
-        render json: ConnectionBlueprint.render(result.value!)
-      else
-        render result.failure.to_response
-      end
+      transmit(result, with: ConnectionBlueprint)
     end
 
     def create
       result = Network::CreateConnection.new(from: current_user, to: params[:username]).execute
 
-      if result.success?
-        render json: ConnectionBlueprint.render(result.value!)
-      else
-        render result.failure.to_response
-      end
+      transmit(result, with: ConnectionBlueprint, status: :created)
     end
 
     def update
-      connection = Connection.find(params[:id])
+      result = Network::UpdateConnection.new(id: params[:id], by: current_user, params: connection_params).execute
 
-      connection.update(connection_params)
-
-      render json: ConnectionBlueprint.render(connection)
+      transmit(result, with: ConnectionBlueprint)
     end
 
     def destroy
