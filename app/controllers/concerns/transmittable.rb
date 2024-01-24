@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Transmittable 
+module Transmittable
   extend ActiveSupport::Concern
 
   def transmit(maybe_result, with: nil, status: :ok)
