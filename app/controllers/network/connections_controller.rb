@@ -21,9 +21,9 @@ module Network
     end
 
     def destroy
-      connection = Connection.find(params[:id])
+      Network::DestroyConnection.new(id: params[:id], by: current_user).execute
 
-      connection.destroy!
+      transmit(nil, status: :no_content)
     end
 
     private
