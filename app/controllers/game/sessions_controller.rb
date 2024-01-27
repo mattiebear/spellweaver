@@ -3,22 +3,18 @@
 module Game
   class SessionsController < ApplicationController
     def index
-      sessions = policy_scope(Session).includes(:players).where(filters)
+      sessions = Session.includes(:players).with_user(current_user)
 
       render json: SessionBlueprint.render(sessions)
     end
 
     def show
-      session = policy_scope(Session).find(params[:id])
-
-      authorize session
+      session = Session.find(params[:id])
 
       render json: SessionBlueprint.render(session)
     end
 
     def create
-      authorize :session, policy_class: Session.policy_class
-
       service = GameSessions::CreateService.new(
         user: current_user,
         name: params[:name],
@@ -29,9 +25,7 @@ module Game
     end
 
     def update
-      session = policy_scope(Session).find(params[:id])
-
-      authorize session
+      session = Session.find(params[:id])
 
       service = GameSessions::UpdateService.new(
         game_session: session,
@@ -42,9 +36,7 @@ module Game
     end
 
     def destroy
-      session = policy_scope(Session).find(params[:id])
-
-      authorize session
+      session = Session.find(params[:id])
 
       session.destroy!
     end

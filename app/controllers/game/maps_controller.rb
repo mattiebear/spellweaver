@@ -3,7 +3,7 @@
 module Game
   class MapsController < ApplicationController
     def index
-      maps = policy_scope(Map)
+      maps = Map.where(user_id: current_user.id)
 
       render json: MapBlueprint.render(maps)
     end
@@ -12,14 +12,10 @@ module Game
       # TODO: Update map policy scope
       map = Map.find(params[:id])
 
-      authorize map
-
       render json: MapBlueprint.render(map, view: :detail)
     end
 
     def create
-      authorize :map, policy_class: Map.policy_class
-
       map = Map.new(map_params).tap do |record|
         record.user_id = current_user.id
       end
@@ -30,9 +26,7 @@ module Game
     end
 
     def update
-      map = policy_scope(Map).find(params[:id])
-
-      authorize map
+      map = Map.find(params[:id])
 
       map.update!(map_params)
 
@@ -40,9 +34,7 @@ module Game
     end
 
     def destroy
-      map = policy_scope(Map).find(params[:id])
-
-      authorize map
+      map = Map.find(params[:id])
 
       map.destroy!
     end
