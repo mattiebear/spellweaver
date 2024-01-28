@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Network
-  class GetConnections
+module Game
+  class GetMaps
     include Dry::Monads[:result]
 
     def initialize(**args)
@@ -9,15 +9,15 @@ module Network
     end
 
     def execute
-      fetch_connections.bind { |connections| Success(connections) }
+      fetch_maps(user)
     end
 
     private
 
     attr_reader :user
 
-    def fetch_connections
-      Success(Connection.includes(:users).with_user(user))
+    def fetch_maps(user)
+      Success(Map.where(user_id: user.id))
     end
   end
 end

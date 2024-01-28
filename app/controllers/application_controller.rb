@@ -13,8 +13,8 @@ class ApplicationController < ActionController::API
 
   def respond_with_unknown_error(err)
     # TODO: Remove error and use logging instead
-    puts err.message
-
+    puts 'ERROR'
+    puts err.backtrace
     render json: { message: err.message }, status: :internal_server_error
   end
 
