@@ -20,8 +20,8 @@ module Game
     attr_reader :params, :user
 
     def build(params, user:)
-      map = Map.new(params).tap do |map|
-        map.user_id = user.id
+      map = Map.new(params).tap do |m|
+        m.user_id = user.id
       end
 
       Success(map)
