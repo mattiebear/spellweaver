@@ -5,23 +5,15 @@ module Network
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 
-    def initialize(by:, id:, params:)
-      @user = by
-      @id = id
-      @params = params
-    end
-
-    def execute
-      record = yield find_connection(id)
-      yield ensure_user_is_part_of_connection(user, record)
-      connection = yield update_connection(record, params)
+    def execute(user:, id:, params:)
+      connection = yield find_connection(id)
+      yield ensure_user_is_part_of_connection(user, connection)
+      connection = yield update_connection(connection, params)
 
       Success(connection)
     end
 
     private
-
-    attr_reader :user, :id, :params
 
     def find_connection(id)
       connection = Connection.find_by(id:)

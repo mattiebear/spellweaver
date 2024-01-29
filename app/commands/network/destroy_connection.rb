@@ -5,17 +5,12 @@ module Network
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 
-    def initialize(by:, id:)
-      @user = by
-      @id = id
-    end
-
-    def execute
+    def execute(user:, id:)
       record = yield find_connection(id)
       yield ensure_user_is_part_of_connection(user, record)
-      conneciton = yield destroy_connection(record)
+      connection = yield destroy_connection(record)
 
-      Success(conneciton)
+      Success(connection)
     end
 
     private

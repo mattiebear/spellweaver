@@ -5,14 +5,9 @@ module Network
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 
-    def initialize(from:, to:)
-      @user = from
-      @to = to
-    end
-
-    def execute
+    def execute(user:, to:)
       username = yield validate_username(to)
-      recipient = yield find_user(username)
+      recipient = yield find_recipient(username)
       yield ensure_no_existing_connection(user, recipient)
       connection = yield create_connection(user, recipient)
 
@@ -20,8 +15,6 @@ module Network
     end
 
     private
-
-    attr_reader :user, :to
 
     def validate_username(username)
       if username.present?
@@ -33,7 +26,7 @@ module Network
       end
     end
 
-    def find_user(username)
+    def find_recipient(username)
       recipient = Access.find_user_by_username(username)
 
       if recipient.blank?

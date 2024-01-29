@@ -10,14 +10,14 @@ module Game
     end
 
     def execute
-      find_session(id, user) { |session| authorize(session, user) }
+      find_session { |session| authorize(session) }
     end
 
     private
 
     attr_reader :id, :user
 
-    def find_session(id, _user)
+    def find_session
       session = Session.find_by(id:)
 
       if session
@@ -27,7 +27,7 @@ module Game
       end
     end
 
-    def authorize(session, user)
+    def authorize(session)
       if session.includes_user?(user)
         Success(session)
       else

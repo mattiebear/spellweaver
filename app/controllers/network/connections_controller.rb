@@ -3,25 +3,25 @@
 module Network
   class ConnectionsController < ApplicationController
     def index
-      result = Network::GetConnections.new(for: current_user).execute
+      result = Network::GetConnections.new.execute(user: current_user)
 
       transmit(result, with: ConnectionBlueprint)
     end
 
     def create
-      result = Network::CreateConnection.new(from: current_user, to: params[:username]).execute
+      result = Network::CreateConnection.new.execute(user: current_user, to: params[:username])
 
       transmit(result, with: ConnectionBlueprint, status: :created)
     end
 
     def update
-      result = Network::UpdateConnection.new(id: params[:id], by: current_user, params: connection_params).execute
+      result = Network::UpdateConnection.new.execute(id: params[:id], user: current_user, params: connection_params)
 
       transmit(result, with: ConnectionBlueprint)
     end
 
     def destroy
-      Network::DestroyConnection.new(id: params[:id], by: current_user).execute
+      Network::DestroyConnection.new.execute(id: params[:id], by: current_user)
 
       transmit(nil, status: :no_content)
     end

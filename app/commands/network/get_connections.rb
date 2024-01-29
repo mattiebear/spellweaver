@@ -4,19 +4,13 @@ module Network
   class GetConnections
     include Dry::Monads[:result]
 
-    def initialize(**args)
-      @user = args[:for]
-    end
-
-    def execute
-      fetch_connections.bind { |connections| Success(connections) }
+    def self.execute(user:)
+      fetch_connections(user).bind { |connections| Success(connections) }
     end
 
     private
 
-    attr_reader :user
-
-    def fetch_connections
+    def fetch_connections(user)
       Success(Connection.includes(:users).with_user(user))
     end
   end

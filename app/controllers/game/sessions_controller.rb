@@ -15,31 +15,31 @@ module Game
     end
 
     def create
-      service = GameSessions::CreateService.new(
-        user: current_user,
+      result = Game::CreateSession.new(
+        by: current_user,
         name: params[:name],
-        user_ids: params[:user_ids]
-      ).run!
+        participants: params[:user_ids],
+        user_client: Rogue::UserClient.new
+      ).execute
 
-      render json: SessionBlueprint.render(service.result)
+      transmit(result, with: SessionBlueprint)
     end
 
     def update
-      session = Session.find(params[:id])
+      result = Game::UpdateSession.new(
+        by: current_user,
+        id: params[:id],
+        status: params[:status]
+      ).execute
 
-      service = GameSessions::UpdateService.new(
-        game_session: session,
-        params: session_params
-      ).run!
-
-      render json: SessionBlueprint.render(service.result)
+      transmit(result, with: SessionBlueprint)
     end
 
     def destroy
-      result = GameSessions::DestroyService.new(
+      result = Game::DestroySession.new(
         by: current_user,
         id: params[:id]
-      ).run!
+      ).execute
 
       transmit(result)
     end

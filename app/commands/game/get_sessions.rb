@@ -9,14 +9,14 @@ module Game
     end
 
     def execute
-      fetch_sessions(user)
+      fetch_sessions
     end
 
     private
 
     attr_reader :user
 
-    def fetch_sessions(user)
+    def fetch_sessions
       Success(Session.includes(:players).with_user(user))
     end
   end
