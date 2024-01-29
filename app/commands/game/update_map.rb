@@ -4,13 +4,7 @@ module Game
   class UpdateMap
     include Dry::Monads[:result]
 
-    def initialize(by:, id:, params:)
-      @id = id
-      @params = params
-      @user = by
-    end
-
-    def execute
+    def execute(user:, id:, params:)
       find_map(id).bind do |map|
         authorize(map, user).bind do
           update(map, params)
@@ -19,8 +13,6 @@ module Game
     end
 
     private
-
-    attr_reader :id, :params, :user
 
     def find_map(id)
       map = Map.find_by(id:)
@@ -33,7 +25,6 @@ module Game
     end
 
     def authorize(map, user)
-      # TODO: Use configurable policy class
       if map.user_id == user.id
         Success(map)
       else

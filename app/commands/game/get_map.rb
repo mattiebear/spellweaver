@@ -4,18 +4,11 @@ module Game
   class GetMap
     include Dry::Monads[:result]
 
-    def initialize(by:, id:)
-      @id = id
-      @user = by
-    end
-
-    def execute
-      find_map(id, user)
+    def execute(id:, user:)
+      find_map(id, user).bind { |map| authorize(map, user) }
     end
 
     private
-
-    attr_reader :id, :user
 
     def find_map(id, user)
       map = Map.find_by(id:, user_id: user.id)
@@ -24,6 +17,14 @@ module Game
         Success(map)
       else
         Failure(CommandFailure.new(:not_found))
+      end
+    end
+
+    def authorize(map, user)
+      if map.user_id == user.id
+        Success(map)
+      else
+        Failure(CommandFailure.new(:unauthorized))
       end
     end
   end

@@ -4,12 +4,7 @@ module Game
   class DestroyMap
     include Dry::Monads[:result]
 
-    def initialize(by:, id:)
-      @id = id
-      @user = by
-    end
-
-    def execute
+    def execute(user:, id:)
       find_map(id).bind do |map|
         authorize(map, user).bind do
           destroy(map)
@@ -18,8 +13,6 @@ module Game
     end
 
     private
-
-    attr_reader :atlas, :id, :name, :user
 
     def find_map(id)
       map = Map.find_by(id:)

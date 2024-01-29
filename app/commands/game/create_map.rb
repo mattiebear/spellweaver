@@ -4,22 +4,15 @@ module Game
   class CreateMap
     include Dry::Monads[:result]
 
-    def initialize(by:, params:)
-      @params = params
-      @user = by
-    end
-
-    def execute
-      build(params, user:).bind do |map|
+    def execute(user:, params:)
+      build(params, user).bind do |map|
         save(map)
       end
     end
 
     private
 
-    attr_reader :params, :user
-
-    def build(params, user:)
+    def build(params, user)
       map = Map.new(params).tap do |m|
         m.user_id = user.id
       end

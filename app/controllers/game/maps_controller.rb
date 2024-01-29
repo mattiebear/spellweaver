@@ -3,38 +3,38 @@
 module Game
   class MapsController < ApplicationController
     def index
-      result = Game::GetMaps.new(for: current_user).execute
+      result = Game::GetMaps.new.execute(user: current_user)
 
       transmit(result, with: MapBlueprint)
     end
 
     def show
-      result = Game::GetMap.new(by: current_user, id: params[:id]).execute
+      result = Game::GetMap.new.execute(user: current_user, id: params[:id])
 
       transmit(result, with: MapBlueprint, view: :detail)
     end
 
     def create
-      result = Game::CreateMap.new(
-        by: current_user,
+      result = Game::CreateMap.new.execute(
+        user: current_user,
         params: map_params
-      ).execute
+      )
 
       transmit(result, with: MapBlueprint, status: :created)
     end
 
     def update
-      result = Game::UpdateMap.new(
-        by: current_user,
+      result = Game::UpdateMap.new.execute(
+        user: current_user,
         id: params[:id],
         params: map_params
-      ).execute
+      )
 
       transmit(result, with: MapBlueprint, view: :detail)
     end
 
     def destroy
-      result = Game::DestroyMap.new(by: current_user, id: params[:id]).execute
+      result = Game::DestroyMap.new.execute(user: current_user, id: params[:id])
 
       transmit(result)
     end

@@ -15,8 +15,6 @@ module Network
 
     private
 
-    attr_reader :user, :id, :params
-
     def find_connection(id)
       connection = Connection.find_by(id:)
 
