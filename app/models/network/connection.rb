@@ -27,9 +27,5 @@ module Network
     def self.between(user, recipient)
       with_user(user).includes(:users).find { |conn| conn.includes_user?(recipient) }
     end
-
-    def self.policy_class
-      ConnectionPolicy
-    end
   end
 end

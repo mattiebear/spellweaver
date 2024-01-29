@@ -23,6 +23,8 @@ module Game
         clear_tokens.bind do
           add_changeset(:delete, :fields)
         end
+
+        Success(self)
       end
 
       def update(data)

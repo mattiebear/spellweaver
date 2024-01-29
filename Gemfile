@@ -23,7 +23,6 @@ gem 'olive_branch'
 # IAM
 gem 'clerk-sdk-ruby', require: 'clerk'
 gem 'jwt'
-gem 'pundit'
 
 # Pattern utilities
 gem 'dry-monads'

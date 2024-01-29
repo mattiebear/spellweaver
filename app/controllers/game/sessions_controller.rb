@@ -3,57 +3,47 @@
 module Game
   class SessionsController < ApplicationController
     def index
-      sessions = policy_scope(Session).includes(:players).where(filters)
+      result = Game::GetSessions.new.execute(user: current_user)
 
-      render json: SessionBlueprint.render(sessions)
+      transmit(result, with: SessionBlueprint)
     end
 
     def show
-      session = policy_scope(Session).find(params[:id])
+      result = Game::GetSession.new.execute(user: current_user, id: params[:id])
 
-      authorize session
-
-      render json: SessionBlueprint.render(session)
+      transmit(result, with: SessionBlueprint)
     end
 
     def create
-      authorize :session, policy_class: Session.policy_class
-
-      service = GameSessions::CreateService.new(
+      result = Game::CreateSession.new.execute(
         user: current_user,
         name: params[:name],
-        user_ids: params[:user_ids]
-      ).run!
+        participants: params[:user_ids]
+      )
 
-      render json: SessionBlueprint.render(service.result)
+      transmit(result, with: SessionBlueprint)
     end
 
     def update
-      session = policy_scope(Session).find(params[:id])
+      result = Game::UpdateSession.new.execute(
+        user: current_user,
+        id: params[:id],
+        status: params[:status]
+      )
 
-      authorize session
-
-      service = GameSessions::UpdateService.new(
-        game_session: session,
-        params: session_params
-      ).run!
-
-      render json: SessionBlueprint.render(service.result)
+      transmit(result, with: SessionBlueprint)
     end
 
     def destroy
-      session = policy_scope(Session).find(params[:id])
+      result = Game::DestroySession.new.execute(
+        user: current_user,
+        id: params[:id]
+      )
 
-      authorize session
-
-      session.destroy!
+      transmit(result)
     end
 
     private
-
-    def filters
-      Rest::ListFilters.new(params, :status).filters
-    end
 
     def session_params
       params.require(:session).permit(:status)

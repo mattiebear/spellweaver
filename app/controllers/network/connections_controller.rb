@@ -3,35 +3,27 @@
 module Network
   class ConnectionsController < ApplicationController
     def index
-      connections = policy_scope(Connection).includes(:users)
+      result = Network::GetConnections.new.execute(user: current_user)
 
-      render json: ConnectionBlueprint.render(connections)
+      transmit(result, with: ConnectionBlueprint)
     end
 
     def create
-      authorize :connection, policy_class: Connection.policy_class
+      result = Network::CreateConnection.new.execute(user: current_user, to: params[:username])
 
-      service = Connections::CreateService.new(user: current_user, username: params[:username]).run!
-
-      render json: ConnectionBlueprint.render(service.result)
+      transmit(result, with: ConnectionBlueprint, status: :created)
     end
 
     def update
-      connection = Connection.find(params[:id])
+      result = Network::UpdateConnection.new.execute(id: params[:id], user: current_user, params: connection_params)
 
-      authorize connection
-
-      connection.update(connection_params)
-
-      render json: ConnectionBlueprint.render(connection)
+      transmit(result, with: ConnectionBlueprint)
     end
 
     def destroy
-      connection = Connection.find(params[:id])
+      Network::DestroyConnection.new.execute(id: params[:id], user: current_user)
 
-      authorize connection
-
-      connection.destroy!
+      transmit(nil, status: :no_content)
     end
 
     private

@@ -3,48 +3,40 @@
 module Game
   class MapsController < ApplicationController
     def index
-      maps = policy_scope(Map)
+      result = Game::GetMaps.new.execute(user: current_user)
 
-      render json: MapBlueprint.render(maps)
+      transmit(result, with: MapBlueprint)
     end
 
     def show
-      # TODO: Update map policy scope
-      map = Map.find(params[:id])
+      result = Game::GetMap.new.execute(user: current_user, id: params[:id])
 
-      authorize map
-
-      render json: MapBlueprint.render(map, view: :detail)
+      transmit(result, with: MapBlueprint, view: :detail)
     end
 
     def create
-      authorize :map, policy_class: Map.policy_class
+      result = Game::CreateMap.new.execute(
+        user: current_user,
+        params: map_params
+      )
 
-      map = Map.new(map_params).tap do |record|
-        record.user_id = current_user.id
-      end
-
-      map.save!
-
-      render json: MapBlueprint.render(map, view: :detail), status: :created
+      transmit(result, with: MapBlueprint, status: :created)
     end
 
     def update
-      map = policy_scope(Map).find(params[:id])
+      result = Game::UpdateMap.new.execute(
+        user: current_user,
+        id: params[:id],
+        params: map_params
+      )
 
-      authorize map
-
-      map.update!(map_params)
-
-      render json: MapBlueprint.render(map, view: :detail)
+      transmit(result, with: MapBlueprint, view: :detail)
     end
 
     def destroy
-      map = policy_scope(Map).find(params[:id])
+      result = Game::DestroyMap.new.execute(user: current_user, id: params[:id])
 
-      authorize map
-
-      map.destroy!
+      transmit(result)
     end
 
     private
