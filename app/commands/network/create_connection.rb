@@ -8,6 +8,7 @@ module Network
     def execute(user:, to:)
       username = yield validate_username(to)
       recipient = yield find_recipient(username)
+      yield ensure_not_self(user, recipient)
       yield ensure_no_existing_connection(user, recipient)
       connection = yield create_connection(user, recipient)
 
@@ -33,7 +34,13 @@ module Network
         failure = CommandFailure.new(:not_found).add('username', ErrorCode::NOT_FOUND, 'No user found with that name')
 
         Failure(failure)
-      elsif recipient.id == user.id
+      else
+        Success(recipient)
+      end
+    end
+
+    def ensure_not_self(user, recipient)
+      if recipient.id == user.id
         failure = CommandFailure.new(:conflict).add('username', ErrorCode::INVALID, 'Cannot send a request to yourself')
 
         Failure(failure)

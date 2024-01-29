@@ -21,7 +21,7 @@ module Network
     end
 
     def destroy
-      Network::DestroyConnection.new.execute(id: params[:id], by: current_user)
+      Network::DestroyConnection.new.execute(id: params[:id], user: current_user)
 
       transmit(nil, status: :no_content)
     end

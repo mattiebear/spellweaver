@@ -4,7 +4,7 @@ module Network
   class GetConnections
     include Dry::Monads[:result]
 
-    def self.execute(user:)
+    def execute(user:)
       fetch_connections(user).bind { |connections| Success(connections) }
     end
 
