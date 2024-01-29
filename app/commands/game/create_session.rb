@@ -5,17 +5,10 @@ module Game
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 
-    def initialize(by:, name:, participants:, user_client:)
-      @name = name
-      @user = by
-      @user_ids = participants
-      @user_client = user_client
-    end
-
-    def execute
-      ids = yield validate_user_ids
-      ids = yield filter_ids(ids)
-      users = yield build_user_data(ids)
+    def execute(user:, name:, participants:)
+      ids = yield validate_user_ids(participants)
+      ids = yield filter_ids(ids, user)
+      users = yield build_user_data(ids, user)
       session = yield create_session(name, users)
 
       Success(session)
@@ -23,10 +16,10 @@ module Game
 
     private
 
-    attr_reader :name, :user, :user_ids, :user_client
+    def validate_user_ids(user_ids)
+      client = Rogue::UserClient.new
 
-    def validate_user_ids
-      if user_client.valid_user_ids?(user_ids)
+      if client.valid_user_ids?(user_ids)
         Success(user_ids)
       else
         failure = CommandFailure.new(:unauthorized)
@@ -36,11 +29,11 @@ module Game
       end
     end
 
-    def filter_ids(ids)
+    def filter_ids(ids, user)
       Success(ids - [user.id])
     end
 
-    def build_user_data(ids)
+    def build_user_data(ids, user)
       data = ids.map do |user_id|
         { user_id:, role: 'participant' }
       end

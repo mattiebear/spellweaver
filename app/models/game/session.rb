@@ -40,8 +40,17 @@ module Game
       includes_user?(user) && !owner?(user)
     end
 
-    def self.policy_class
-      SessionPolicy
+    def transition_to?(new_status)
+      return false if complete?
+
+      case status
+      when 'pending'
+        new_status == 'active'
+      when 'active'
+        new_status == 'complete'
+      else
+        false
+      end
     end
   end
 end

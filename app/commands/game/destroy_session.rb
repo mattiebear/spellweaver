@@ -1,31 +1,23 @@
 # frozen_string_literal: true
 
 module Game
-  class DestroySession
+  class DestroyMap
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 
-    def initialize(by:, session:)
-      @session = session
-      @user = by
-    end
+    def execute(user:, id:)
+      session = yield find_session(id)
+      yield authorize(session, user)
+      yield destroy_live_session(session)
+      yield destroy_session(session)
 
-    def execute
-      session = yield find_session
-      session = yield ensure_user_owns_session
-      yield destroy_session
-      yield destroy_story_cache
-      yield send_destroyed_event
+      Success(session)
     end
 
     private
 
-    attr_reader :atlas, :session, :name, :user
-
-    def find_session
-      return Success(session) if session.is_a?(Game::Session)
-
-      session = Session.find_by(id: session)
+    def find_session(id)
+      session = Game::Session.find_by(id:)
 
       if session
         Success(session)
@@ -34,7 +26,7 @@ module Game
       end
     end
 
-    def ensure_user_owns_session
+    def authorize(session, user)
       if session.owner?(user)
         Success(session)
       else
@@ -42,35 +34,12 @@ module Game
       end
     end
 
-    def destroy_story_cache
-      Success(session.story_cache.destroy)
+    def destroy_live_session(session)
+      ClearGameboard.new.execute(id: session.id)
+    end
 
-    def destroy_session
+    def destroy_session(session)
       Success(session.destroy)
-    end
-
-    def destroy_story_cache
-      Game::State::Loader.new(game_session.id).load!.bind do |state|
-        state.destroy! do
-          author.apply(state)
-        end
-      end
-    end
-
-    def send_destroyed_event
-      ActionCable.server.broadcast(story_key, message.to_h)
-    end
-
-    def message
-      Game::Messaging::Message.new(event: 'complete-story')
-    end
-
-    def story_key
-      "story:#{session.id}"
-    end
-
-    def author
-      @author ||= Game::Sync::Author.new([:story, session.id])
     end
   end
 end

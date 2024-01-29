@@ -4,20 +4,13 @@ module Game
   class GetSession
     include Dry::Monads[:result]
 
-    def initialize(by:, id:)
-      @id = id
-      @user = by
-    end
-
-    def execute
-      find_session { |session| authorize(session) }
+    def execute(user:, id:)
+      find_session(id).bind { |session| authorize(session, user) }
     end
 
     private
 
-    attr_reader :id, :user
-
-    def find_session
+    def find_session(id)
       session = Session.find_by(id:)
 
       if session
@@ -27,7 +20,7 @@ module Game
       end
     end
 
-    def authorize(session)
+    def authorize(session, user)
       if session.includes_user?(user)
         Success(session)
       else
