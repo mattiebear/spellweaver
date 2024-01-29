@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Game
-  class DestroyMap
+  class DestroySession
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 

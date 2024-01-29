@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Game
-  class CreateMap
+  class CreateSession
     include Dry::Monads[:result]
     include Dry::Monads::Do.for(:execute)
 

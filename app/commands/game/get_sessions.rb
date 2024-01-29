@@ -10,7 +10,7 @@ module Game
 
     private
 
-    def fetch_sessions
+    def fetch_sessions(user)
       Success(Session.includes(:players).with_user(user))
     end
   end

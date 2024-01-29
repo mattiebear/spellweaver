@@ -9,7 +9,7 @@ module Game
       session = yield find_session(id)
       yield authorize(session, user)
       yield validate_status(session, status)
-      yield destroy_live_session(session)
+      yield destroy_live_session(session) if status == 'complete'
       session = yield update_session(session, status)
 
       Success(session)
@@ -47,14 +47,10 @@ module Game
     end
 
     def destroy_live_session(session)
-      if status == 'complete'
-        ClearGameboard.new.execute(id: session.id)
-      else
-        Success()
-      end
+      ClearGameboard.new.execute(id: session.id)
     end
 
-    def update_session(status)
+    def update_session(session, status)
       if session.update(status:)
         Success(session)
       else

@@ -19,13 +19,12 @@ module GameSessions
 
     def destroy_story_cache
       Game::State::Loader.new(game_session.id).load!.bind do |state|
-        state.destroy! do
+        state.destroy!.bind do
           author.apply(state)
         end
       end
     end
 
-    # TODO: Try to use game classes for this
     def send_destroyed_event
       ActionCable.server.broadcast(story_key, message.to_h)
     end

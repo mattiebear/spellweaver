@@ -8,6 +8,8 @@ module Game
     def execute(id:)
       yield destroy_story_cache(id)
       yield send_destroyed_event(id)
+
+      Success()
     end
 
     private
@@ -16,7 +18,7 @@ module Game
       author = Game::Sync::Author.new([:story, id])
 
       Game::State::Loader.new(id).load!.bind do |state|
-        state.destroy! do
+        state.destroy!.bind do
           author.apply(state)
         end
       end
@@ -26,6 +28,8 @@ module Game
       story_key = "story:#{id}"
 
       ActionCable.server.broadcast(story_key, message.to_h)
+
+      Success()
     end
 
     def message

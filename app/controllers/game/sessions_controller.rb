@@ -9,17 +9,16 @@ module Game
     end
 
     def show
-      result = Game::GetSession.new.execute(by: current_user, id: params[:id])
+      result = Game::GetSession.new.execute(user: current_user, id: params[:id])
 
       transmit(result, with: SessionBlueprint)
     end
 
     def create
       result = Game::CreateSession.new.execute(
-        by: current_user,
+        user: current_user,
         name: params[:name],
-        participants: params[:user_ids],
-        user_client: Rogue::UserClient.new
+        participants: params[:user_ids]
       )
 
       transmit(result, with: SessionBlueprint)
@@ -27,7 +26,7 @@ module Game
 
     def update
       result = Game::UpdateSession.new.execute(
-        by: current_user,
+        user: current_user,
         id: params[:id],
         status: params[:status]
       )
@@ -37,7 +36,7 @@ module Game
 
     def destroy
       result = Game::DestroySession.new.execute(
-        by: current_user,
+        user: current_user,
         id: params[:id]
       )
 
