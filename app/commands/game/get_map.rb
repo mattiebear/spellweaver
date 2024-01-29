@@ -10,20 +10,20 @@ module Game
     end
 
     def execute
-      fetch_map(id, user)
+      find_map(id, user)
     end
 
     private
 
     attr_reader :id, :user
 
-    def fetch_map(id, user)
+    def find_map(id, user)
       map = Map.find_by(id:, user_id: user.id)
 
       if map
         Success(map)
       else
-        Failure(CommandFailure.new(:unprocessable_entity))
+        Failure(CommandFailure.new(:not_found))
       end
     end
   end

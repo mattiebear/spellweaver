@@ -3,15 +3,15 @@
 module Game
   class SessionsController < ApplicationController
     def index
-      sessions = Session.includes(:players).with_user(current_user)
+      result = Game::GetSessions.new(for: current_user).execute
 
-      render json: SessionBlueprint.render(sessions)
+      transmit(result, with: SessionBlueprint)
     end
 
     def show
-      session = Session.find(params[:id])
+      result = Game::GetSession.new(by: current_user, id: params[:id]).execute
 
-      render json: SessionBlueprint.render(session)
+      transmit(result, with: SessionBlueprint)
     end
 
     def create
@@ -36,9 +36,12 @@ module Game
     end
 
     def destroy
-      session = Session.find(params[:id])
+      result = GameSessions::DestroyService.new(
+        by: current_user,
+        id: params[:id]
+      ).run!
 
-      session.destroy!
+      transmit(result)
     end
 
     private
